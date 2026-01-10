@@ -19,6 +19,14 @@
 #define STR_HELPER(x) #x
 #define STRINGIFY(x)  STR_HELPER(x)
 
+// Used by official servers as anti-tamper measure
+typedef struct
+{
+	uint32_t type;
+	uint8_t one;
+	uint8_t two;
+} PeerAuth;
+
 struct Server;
 typedef struct PeerData
 {
@@ -41,6 +49,8 @@ typedef struct PeerData
 	bool				can_vote;
 	bool				voted;
 	bool 				disconnecting;
+
+	PeerAuth auth;
 
 	/* Character */
 	enum
