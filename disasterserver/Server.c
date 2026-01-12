@@ -182,7 +182,8 @@ bool peer_identity(PeerData* v, Packet* packet)
 	v->lobby_icon = lobby_icon;
 	v->pet = pet;
 
-	if (g_config.anticheat) 
+	if (g_config.anticheat)
+	{
 		v->mod_tool = checkcum == 0 || checkcum2 == 0;
 	}
 
@@ -207,7 +208,7 @@ bool peer_identity(PeerData* v, Packet* packet)
 				PacketCreate(&pack, SERVER_LOBBY_CHANGELOBBY);
 				PacketWrite(&pack, packet_write32, g_config.port + server->id);
 				packet_send(v->peer, &pack, true);
-				
+
 				Debug("Redirecting %d to another free server: %d", v->id, server->id);
 				res = false;
 				goto quit;
@@ -291,7 +292,7 @@ bool server_worker(Server* server)
 	char thread_name[128];
 	snprintf(thread_name, 128, "Worker Thr %d", server->id);
 	ThreadVarSet(g_threadName, thread_name);
-	
+
 	if (!ip_addr_list)
 	{
 		ip_addr_list = cJSON_CreateObject();
@@ -357,7 +358,7 @@ bool server_worker(Server* server)
 					PeerData* v = (PeerData*)ev.peer->data;
 					if(!v)
 						break;
-					
+
 					if (!v->op && v->should_timeout)
 					{
 						uint64_t result;
@@ -373,7 +374,7 @@ bool server_worker(Server* server)
 							cJSON_DeleteItemFromObject(ip_addr_list, v->ip.value);
 						}
 						MutexUnlock(ip_addr_mut);
-						
+
 						MutexLock(v->server->state_lock);
 						{
 							// Step 3: Cleanup (Only if joined before)
@@ -382,7 +383,7 @@ bool server_worker(Server* server)
 						}
 						MutexUnlock(v->server->state_lock);
 					}
-					
+
 					Info("%s (id %d) " LOG_YLW "left.", v->nickname.value, v->id);
 					free(v);
 					break;
@@ -416,7 +417,7 @@ bool server_worker(Server* server)
 		}
 
 		double now = time_end(&ticker);
-		while(next_tick < now) 
+		while (next_tick < now)
 		{
 			next_tick += TARGET_FPS;
 			MutexLock(server->state_lock);
@@ -438,7 +439,7 @@ bool server_worker(Server* server)
 					break;
 				}
 
-				// Heartbeat 
+				// Heartbeat
 				if (server->peers.noitems > 0)
 				{
 					server_broadcast(server, &pack, true);
@@ -481,7 +482,7 @@ bool server_disconnect(Server* server, ENetPeer* peer, DisconnectReason reason, 
 			enet_peer_disconnect(peer, reason);
 
 		if(!text)
-		{	
+		{
 			Info("Disconnected id %d %d: No text.", data->id, reason);
 		}
 		else
@@ -507,7 +508,7 @@ bool server_disconnect_id(Server* server, uint16_t id, DisconnectReason reason, 
 			PeerData* data = server->peers.ptr[i];
 			if (!data)
 				continue;
-			
+
 			if (data->id == id)
 				return server_disconnect(server, data->peer, reason, text);
 		}
@@ -692,7 +693,7 @@ unsigned long server_cmd_parse(String* string)
 			continue;
 		else
 			found_digit = true;
-		
+
 		if (isspace(string->value[i]))
 			break;
 
@@ -803,7 +804,7 @@ bool server_cmd_handle(Server* server, unsigned long hash, PeerData* v, String* 
 				RAssert(server_send_msg(v->server, v->peer, msg));
 				break;
 			}
-			
+
 			PacketCreate(&pack, SERVER_LOBBY_CHANGELOBBY);
 			PacketWrite(&pack, packet_write32, g_config.port + ind - 1);
 			RAssert(packet_send(v->peer, &pack, true));
@@ -849,7 +850,7 @@ bool server_cmd_handle(Server* server, unsigned long hash, PeerData* v, String* 
 			server_send_msg(v->server, v->peer, g_config.motd);
 			break;
 		}
-		
+
 		/* Does he know? */
 		case CMD_STINK:
 		{
@@ -878,7 +879,7 @@ bool server_msg_handle(Server *server, PacketType type, PeerData *v, Packet *pac
  	{
 			default:
 				break;
-				
+
 			case CLIENT_LOBBY_CHOOSEBAN:
 			{
 				if (!v->op)
