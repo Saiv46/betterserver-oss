@@ -1,6 +1,7 @@
 .vs/
 .vscode/
-out/
+.direnv/
+enet/
 build/
 build_android/
 /.cache/clangd/index
