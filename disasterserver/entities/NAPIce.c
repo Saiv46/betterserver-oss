@@ -2,7 +2,7 @@
 
 bool ice_tick(Server* server, Entity* entity)
 {
-	Ice* ice = (Ice*)entity;
+	Ice* ice = (Ice*) entity;
 	if (!ice->activated)
 		return true;
 

@@ -5,9 +5,9 @@
 
 bool snowball_init(Server* server, Entity* entity)
 {
-	(void)server;
-	
-	Snowball* sb = (Snowball*)entity;
+	(void) server;
+
+	Snowball* sb = (Snowball*) entity;
 
 	for (int i = 0; i < 20; i++)
 	{
@@ -20,8 +20,8 @@ bool snowball_init(Server* server, Entity* entity)
 
 bool snowball_tick(Server* server, Entity* entity)
 {
-	Snowball* sb = (Snowball*)entity;
-	
+	Snowball* sb = (Snowball*) entity;
+
 	if (sb->timer < 20 * TICKSPERSEC)
 		sb->timer += server->delta;
 	else
@@ -74,7 +74,7 @@ bool snowball_tick(Server* server, Entity* entity)
 		PacketWrite(&pack, packet_write8, 1);
 		PacketWrite(&pack, packet_write8, sb->sid);
 		PacketWrite(&pack, packet_write8, sb->state);
-		PacketWrite(&pack, packet_write8, (uint8_t)sb->frame);
+		PacketWrite(&pack, packet_write8, (uint8_t) sb->frame);
 		PacketWrite(&pack, packet_writedouble, sb->stage_prog);
 		server_broadcast(server, &pack, false);
 	}

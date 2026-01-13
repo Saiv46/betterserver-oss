@@ -2,7 +2,7 @@
 
 bool hddoor_tick(Server* server, Entity* entity)
 {
-	HDDoor* door = (HDDoor*)entity;
+	HDDoor* door = (HDDoor*) entity;
 	if (door->timer > 0)
 	{
 		door->timer -= server->delta;

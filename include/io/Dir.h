@@ -5,8 +5,8 @@
 #include <direct.h>
 #define mkdir(dir, mode) _mkdir(dir)
 #elif defined(__unix) || defined(__unix__)
+#include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <signal.h>
 #endif
 #endif

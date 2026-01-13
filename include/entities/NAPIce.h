@@ -8,9 +8,9 @@ typedef struct
 {
 	ENTITY_BODY
 
-	uint8_t		iid;
-	bool		activated;
-	double		timer;
+	uint8_t iid;
+	bool	activated;
+	double	timer;
 
 } Ice;
 #define MakeIce(id) ((Ice) { MakeEntity("ice", 0, 0) NULL, ice_tick, NULL, id, 0, 0 })

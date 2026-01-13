@@ -2,7 +2,7 @@
 
 bool lcchain_tick(Server* server, Entity* entity)
 {
-	LCChain* chain = (LCChain*)entity;
+	LCChain* chain = (LCChain*) entity;
 
 	switch (chain->state)
 	{

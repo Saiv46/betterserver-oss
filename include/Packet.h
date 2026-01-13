@@ -168,7 +168,7 @@ typedef enum
 
 typedef struct
 {
-	#define PACKET_MAXSIZE 256
+#define PACKET_MAXSIZE 256
 
 	uint8_t buff[PACKET_MAXSIZE];
 	uint8_t pos;
@@ -178,8 +178,8 @@ typedef struct
 /* UTF-8 supporting string */
 typedef struct
 {
-	char		value[250];
-	uint16_t	len;
+	char	 value[250];
+	uint16_t len;
 } String;
 
 String string_new(const char* value);
@@ -187,8 +187,8 @@ size_t string_length(String* str);
 String string_lower(String str);
 #define __Str(x) string_new(x)
 
-bool 	packet_new(Packet* packet, PacketType type);
-Packet 	packet_from(ENetPacket* packet);
+bool   packet_new(Packet* packet, PacketType type);
+Packet packet_from(ENetPacket* packet);
 
 struct Server;
 bool packet_send(ENetPeer* peer, Packet* packet, bool reliable);
@@ -212,9 +212,9 @@ bool packet_writedouble(Packet* packet, double value);
 bool packet_writestr(Packet* packet, String value);
 
 #define PacketCreate(packet, type) RAssert(packet_new(packet, type))
-#define PacketRead(outname, packet, func, type)\
-type outname;\
-RAssert(func(packet, (void*)&outname))
+#define PacketRead(outname, packet, func, type) \
+	type outname;                               \
+	RAssert(func(packet, (void*) &outname))
 #define PacketWrite(packet, func, val) RAssert(func(packet, val))
 
 #endif

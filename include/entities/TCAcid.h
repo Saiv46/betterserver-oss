@@ -8,9 +8,9 @@ typedef struct
 {
 	ENTITY_BODY
 
-	uint8_t		acid_id;
-	uint8_t		activated;
-	double		timer;
+	uint8_t acid_id;
+	uint8_t activated;
+	double	timer;
 } Acid;
 #define MakeAcid() ((Acid) { MakeEntity("acid", 0, 0) NULL, acid_tick, NULL, 0, 0, 0.0 })
 

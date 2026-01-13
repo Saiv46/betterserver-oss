@@ -5,31 +5,31 @@
 
 bool act9wall_init(Server* server, Entity* entity)
 {
-	Act9Wall* wall = (Act9Wall*)entity;
+	Act9Wall* wall = (Act9Wall*) entity;
 	wall->start_time = (server->game.time_sec * TICKSPERSEC + server->game.time);
 	return true;
 }
 
 bool act9wall_tick(Server* server, Entity* entity)
 {
-	Act9Wall* wall = (Act9Wall*)entity;
+	Act9Wall* wall = (Act9Wall*) entity;
 
 	double time = (server->game.time_sec * TICKSPERSEC + server->game.time);
-	double off = (double)(wall->start_time - time) / (double)wall->start_time;
+	double off = (double) (wall->start_time - time) / (double) wall->start_time;
 
 	double x = wall->pos.x * off;
 	double y = wall->pos.y * off;
 	double wx;
 	double hy;
-	
+
 	Packet pack;
 	PacketCreate(&pack, SERVER_ACT9WALL_STATE);
 	PacketWrite(&pack, packet_write8, wall->wid);
-	PacketWrite(&pack, packet_write16, (uint16_t)x);
-	PacketWrite(&pack, packet_write16, (uint16_t)y);
+	PacketWrite(&pack, packet_write16, (uint16_t) x);
+	PacketWrite(&pack, packet_write16, (uint16_t) y);
 	server_broadcast(server, &pack, false);
-	
-	switch(wall->wid)
+
+	switch (wall->wid)
 	{
 		case 0:
 		{
@@ -62,23 +62,23 @@ bool act9wall_tick(Server* server, Entity* entity)
 			return false;
 		}
 	}
-	
-	for(size_t i = 0; i < server->peers.capacity; i++)
+
+	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* data = (PeerData*)server->peers.ptr[i];
-		if(!data)
+		PeerData* data = (PeerData*) server->peers.ptr[i];
+		if (!data)
 			continue;
 
-		if(!data->in_game)
+		if (!data->in_game)
 			continue;
 
-		if(data->plr.pos.x == 0 && data->plr.pos.y == 0)
+		if (data->plr.pos.x == 0 && data->plr.pos.y == 0)
 			continue;
 
-		if(data->plr.flags & PLAYER_DEAD)
+		if (data->plr.flags & PLAYER_DEAD)
 			continue;
 
-		if(data->plr.pos.x >= x && data->plr.pos.y >= y && data->plr.pos.x <= wx && data->plr.pos.y <= hy)
+		if (data->plr.pos.x >= x && data->plr.pos.y >= y && data->plr.pos.x <= wx && data->plr.pos.y <= hy)
 		{
 			server_disconnect(server, data->peer, DR_OTHER, "Inside the wall for too long!");
 			continue;

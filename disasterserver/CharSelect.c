@@ -1,7 +1,7 @@
-#include <Log.h>
-#include <States.h>
 #include <CMath.h>
 #include <Colors.h>
+#include <Log.h>
+#include <States.h>
 
 bool charselect_check_state(Server* server)
 {
@@ -10,7 +10,7 @@ bool charselect_check_state(Server* server)
 	bool should = true;
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* peer = (PeerData*)server->peers.ptr[i];
+		PeerData* peer = (PeerData*) server->peers.ptr[i];
 		if (!peer)
 			continue;
 
@@ -20,7 +20,7 @@ bool charselect_check_state(Server* server)
 		if (peer->exe_char == CH_NONE && peer->surv_char == EX_NONE)
 			should = false;
 	}
-	
+
 	if (should)
 		return game_init(server->lobby.exe, server->lobby.map, server);
 
@@ -30,12 +30,12 @@ bool charselect_check_state(Server* server)
 bool charselect_choose_exe(Server* server, uint16_t* id)
 {
 	RAssert(server);
-	
+
 	uint32_t weight = 0;
 
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* peer = (PeerData*)server->peers.ptr[i];
+		PeerData* peer = (PeerData*) server->peers.ptr[i];
 		if (!peer)
 			continue;
 
@@ -49,29 +49,29 @@ bool charselect_choose_exe(Server* server, uint16_t* id)
 		weight += peer->exe_chance;
 	}
 
-	if(weight == 0)
+	if (weight == 0)
 		weight++;
 
 	uint32_t rnd = rand() % weight;
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* peer = (PeerData*)server->peers.ptr[i];
+		PeerData* peer = (PeerData*) server->peers.ptr[i];
 		if (!peer)
 			continue;
 
 		if (!peer->in_game)
 			continue;
 
-		if(peer->exe_chance >= 100)
+		if (peer->exe_chance >= 100)
 		{
 			*id = peer->id;
 			return true;
 		}
-		
+
 		if (rnd < peer->exe_chance)
 		{
 			Info("%s (id %d, c %d) is exe!", peer->nickname.value, peer->id, peer->exe_chance);
-			
+
 			peer->exe_chance = 1 + rand() % 1;
 			*id = peer->id;
 
@@ -91,13 +91,13 @@ bool charselect_state_handle(PeerData* v, Packet* packet)
 	PacketRead(passtrough, packet, packet_read8, uint8_t);
 	PacketRead(type, packet, packet_read8, uint8_t);
 
-	bool res = true;
+	bool   res = true;
 	Packet pack;
 	switch (type)
-	{			
+	{
 		case CLIENT_REQUEST_EXECHARACTER:
 		{
-			if(!v->in_game)
+			if (!v->in_game)
 				break;
 
 			// Sanity check
@@ -132,9 +132,9 @@ bool charselect_state_handle(PeerData* v, Packet* packet)
 
 		case CLIENT_REQUEST_CHARACTER:
 		{
-			if(!v->in_game)
+			if (!v->in_game)
 				break;
-				
+
 			if (v->surv_char != CH_NONE)
 				break;
 
@@ -151,7 +151,7 @@ bool charselect_state_handle(PeerData* v, Packet* packet)
 				v->server->lobby.avail[id] = 0;
 
 			PacketCreate(&pack, SERVER_LOBBY_CHARACTER_RESPONSE);
-			PacketWrite(&pack, packet_write8, id+1);
+			PacketWrite(&pack, packet_write8, id + 1);
 			PacketWrite(&pack, packet_write8, avail);
 			RAssert(packet_send(v->peer, &pack, true));
 
@@ -161,7 +161,7 @@ bool charselect_state_handle(PeerData* v, Packet* packet)
 
 				PacketCreate(&pack, SERVER_LOBBY_CHARACTER_CHANGE);
 				PacketWrite(&pack, packet_write16, v->id);
-				PacketWrite(&pack, packet_write8, id+1);
+				PacketWrite(&pack, packet_write8, id + 1);
 				server_broadcast(v->server, &pack, true);
 			}
 
@@ -211,7 +211,7 @@ bool charselect_state_tick(Server* server)
 		{
 			for (size_t i = 0; i < server->peers.capacity; i++)
 			{
-				PeerData* peer = (PeerData*)server->peers.ptr[i];
+				PeerData* peer = (PeerData*) server->peers.ptr[i];
 				if (!peer)
 					continue;
 
@@ -239,7 +239,7 @@ bool charselect_init(int8_t map, Server* server)
 	RAssert(server);
 	RAssert(charselect_choose_exe(server, &server->lobby.exe));
 
-	if(server->lobby.exe == -1)
+	if (server->lobby.exe == -1)
 	{
 		Err("Failed to pick exe for some reason!");
 		return lobby_init(server);
@@ -265,8 +265,8 @@ bool charselect_init(int8_t map, Server* server)
 
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* data = (PeerData*)server->peers.ptr[i];
-		
+		PeerData* data = (PeerData*) server->peers.ptr[i];
+
 		if (!data)
 			continue;
 
@@ -293,6 +293,6 @@ bool charselect_state_left(PeerData* v)
 
 	if (server_ingame(v->server) <= 1 || v->id == v->server->lobby.exe)
 		return lobby_init(v->server);
-	
+
 	return charselect_check_state(v->server) || lobby_init(v->server);
 }

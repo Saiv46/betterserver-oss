@@ -1,8 +1,8 @@
-#include <maps/RavineMist.h>
-#include <entities/RMZSlug.h>
-#include <entities/RMZShard.h>
-#include <States.h>
 #include <CMath.h>
+#include <States.h>
+#include <entities/RMZShard.h>
+#include <entities/RMZSlug.h>
+#include <maps/RavineMist.h>
 
 void shuffle(Shard* array, size_t n)
 {
@@ -11,7 +11,7 @@ void shuffle(Shard* array, size_t n)
 		for (size_t i = 0; i < n - 1; i++)
 		{
 			size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
-			Shard t = array[j];
+			Shard  t = array[j];
 			array[j] = array[i];
 			array[i] = t;
 		}
@@ -42,7 +42,7 @@ bool rmz_spawnshards(Server* server, Player* player)
 	for (uintptr_t i = 0; i < player->data[0]; i++)
 	{
 		Debug("shard spawned at %f %f", player->pos.x, player->pos.y);
-		RAssert(game_spawn(server, (Entity*)&(MakeShard((player->pos.x + (-8 + rand() % 17)), player->pos.y, 1)), sizeof(Shard), NULL));
+		RAssert(game_spawn(server, (Entity*) &(MakeShard((player->pos.x + (-8 + rand() % 17)), player->pos.y, 1)), sizeof(Shard), NULL));
 	}
 
 	player->data[0] = 0;
@@ -55,21 +55,20 @@ bool rmz_init(Server* server)
 	RAssert(map_ring(server, 5));
 
 	// slugs
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(1901, 392)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(2193, 392)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(2468, 392)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(1188, 860)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(2577, 1952)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(2564, 2264)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(2782, 2264)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(1441, 2264)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(884, 2264)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(988, 2004)), sizeof(SlugSpawner), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeSlugSpawn(915, 2004)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(1901, 392)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(2193, 392)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(2468, 392)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(1188, 860)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(2577, 1952)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(2564, 2264)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(2782, 2264)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(1441, 2264)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(884, 2264)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(988, 2004)), sizeof(SlugSpawner), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeSlugSpawn(915, 2004)), sizeof(SlugSpawner), NULL));
 
 	// shards
-	Shard shards[12] = 
-	{
+	Shard shards[12] = {
 		MakeShard(862, 248, 0),
 		MakeShard(3078, 248, 0),
 		MakeShard(292, 558, 0),
@@ -86,7 +85,7 @@ bool rmz_init(Server* server)
 	shuffle(shards, 12);
 
 	for (int i = 0; i < 7; i++)
-		RAssert(game_spawn(server, (Entity*)&shards[i], sizeof(Shard), NULL));
+		RAssert(game_spawn(server, (Entity*) &shards[i], sizeof(Shard), NULL));
 
 	return true;
 }
@@ -100,7 +99,7 @@ bool rmz_tick(Server* server)
 
 		if (server->game.time_sec <= TICKSPERSEC - 10 && server->game.bring_state < BS_ACTIVATED)
 		{
-			if((7 - game_find(server, NULL, "shard", 7) >= 6))
+			if ((7 - game_find(server, NULL, "shard", 7) >= 6))
 				game_bigring(server, BS_ACTIVATED);
 		}
 	}
@@ -125,9 +124,9 @@ bool rmz_tcpmsg(PeerData* v, Packet* packet)
 			PacketRead(proj, packet, packet_read8, uint8_t);
 
 			Slug* ent;
-			if (!game_despawn(v->server, (Entity**)&ent, eid))
+			if (!game_despawn(v->server, (Entity**) &ent, eid))
 				break;
-			
+
 			if (proj)
 			{
 				free(ent);
@@ -161,9 +160,9 @@ bool rmz_tcpmsg(PeerData* v, Packet* packet)
 				break;
 
 			PacketRead(eid, packet, packet_read16, uint16_t);
-			
+
 			Shard* ent;
-			if (!game_despawn(v->server, (Entity**)&ent, eid))
+			if (!game_despawn(v->server, (Entity**) &ent, eid))
 				break;
 
 			// incr shard count
@@ -204,7 +203,7 @@ bool rmz_tcpmsg(PeerData* v, Packet* packet)
 
 bool rmz_left(PeerData* v)
 {
-	if(!v->server->game.started)
+	if (!v->server->game.started)
 		return true;
 
 	RAssert(rmz_spawnshards(v->server, &v->plr));

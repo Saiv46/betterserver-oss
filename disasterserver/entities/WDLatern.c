@@ -2,7 +2,7 @@
 
 bool latern_tick(Server* server, Entity* entity)
 {
-	Latern* lat = (Latern*)entity;
+	Latern* lat = (Latern*) entity;
 
 	lat->timer += server->delta;
 	if (!lat->side)

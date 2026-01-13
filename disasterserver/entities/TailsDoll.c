@@ -1,9 +1,8 @@
 #include "Server.h"
-#include <entities/TailsDoll.h>
 #include <CMath.h>
+#include <entities/TailsDoll.h>
 
-Vector2 spots[11] =
-{
+Vector2 spots[11] = {
 	{ 177, 944 },
 	{ 1953, 544 },
 	{ 3279, 224 },
@@ -11,27 +10,27 @@ Vector2 spots[11] =
 	{ 4060, 1264 },
 	{ 3805, 1824 },
 	{ 2562, 1584 },
-	{ 515,  1824 },
+	{ 515, 1824 },
 	{ 2115, 1056 },
-	{ 984,  1184 },
+	{ 984, 1184 },
 	{ 1498, 1504 }
 };
-	
+
 void tdoll_find_spot(Server* server, TailsDoll* doll)
 {
 	Vector2 new_spots[11];
-	int     new_count = 0;
+	int		new_count = 0;
 
 	for (int i = 0; i < 11; i++)
 	{
-		bool can_use = true; 
+		bool can_use = true;
 		for (size_t j = 0; j < server->peers.capacity; j++)
 		{
-			PeerData* data = (PeerData*)server->peers.ptr[j];
+			PeerData* data = (PeerData*) server->peers.ptr[j];
 			if (!data)
 				continue;
 
-			if(!data->in_game)
+			if (!data->in_game)
 				continue;
 
 			if (vector2_dist(&spots[i], &data->plr.pos) < 480.f)
@@ -41,13 +40,13 @@ void tdoll_find_spot(Server* server, TailsDoll* doll)
 			}
 		}
 
-		if(can_use)
+		if (can_use)
 			new_spots[new_count++] = spots[i];
 	}
 
 	if (new_count > 0)
 	{
-		int ball = rand() % new_count;
+		int		ball = rand() % new_count;
 		Vector2 spot = new_spots[ball];
 		doll->pos.x = spot.x;
 		doll->pos.y = spot.y;
@@ -71,11 +70,11 @@ bool tdoll_is_vaild_target(Server* server, TailsDoll* doll)
 
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* data = (PeerData*)server->peers.ptr[i];
+		PeerData* data = (PeerData*) server->peers.ptr[i];
 		if (!data)
 			continue;
 
-		if(!data->in_game)
+		if (!data->in_game)
 			continue;
 
 		if (data->id == server->game.exe)
@@ -104,11 +103,11 @@ bool tdoll_find_target(Server* server, TailsDoll* doll)
 	// scan for people
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* data = (PeerData*)server->peers.ptr[i];
+		PeerData* data = (PeerData*) server->peers.ptr[i];
 		if (!data)
 			continue;
 
-		if(!data->in_game)
+		if (!data->in_game)
 			continue;
 
 		if (data->id == server->game.exe)
@@ -135,15 +134,15 @@ bool tdoll_find_target(Server* server, TailsDoll* doll)
 
 bool tdoll_init(Server* server, Entity* entity)
 {
-	TailsDoll* doll = (TailsDoll*)entity;
+	TailsDoll* doll = (TailsDoll*) entity;
 	tdoll_find_spot(server, doll);
 
 	Packet pack;
 	PacketCreate(&pack, SERVER_DTTAILSDOLL_STATE);
 	PacketWrite(&pack, packet_write8, 0);
-	PacketWrite(&pack, packet_write16, (uint16_t)doll->pos.x);
-	PacketWrite(&pack, packet_write16, (uint16_t)doll->pos.y);
-	PacketWrite(&pack, packet_write8, (uint8_t)doll->state);
+	PacketWrite(&pack, packet_write16, (uint16_t) doll->pos.x);
+	PacketWrite(&pack, packet_write16, (uint16_t) doll->pos.y);
+	PacketWrite(&pack, packet_write8, (uint8_t) doll->state);
 	server_broadcast(server, &pack, true);
 
 	return true;
@@ -151,7 +150,7 @@ bool tdoll_init(Server* server, Entity* entity)
 
 bool tdoll_tick(Server* server, Entity* entity)
 {
-	TailsDoll* doll = (TailsDoll*)entity;
+	TailsDoll* doll = (TailsDoll*) entity;
 	switch (doll->state)
 	{
 		case TDST_NONE:
@@ -203,20 +202,20 @@ bool tdoll_tick(Server* server, Entity* entity)
 				break;
 			}
 
-			if (abs((int)(data->plr.pos.x - doll->pos.x)) >= 4)
+			if (abs((int) (data->plr.pos.x - doll->pos.x)) >= 4)
 			{
-				doll->velx += sign((int)data->plr.pos.x - doll->pos.x) * 0.512 * server->delta;
+				doll->velx += sign((int) data->plr.pos.x - doll->pos.x) * 0.512 * server->delta;
 				doll->velx = fmin(fmax(doll->velx, -5), 5);
 			}
 
-			if (abs((int)(data->plr.pos.y - doll->pos.y)) >= 5)
+			if (abs((int) (data->plr.pos.y - doll->pos.y)) >= 5)
 			{
-				doll->vely += sign((int)data->plr.pos.y - doll->pos.y) * 0.480 * server->delta;
+				doll->vely += sign((int) data->plr.pos.y - doll->pos.y) * 0.480 * server->delta;
 				doll->vely = fmin(fmax(doll->vely, -5), 5);
 			}
 
-			doll->pos.x += doll->velx * (float)server->delta;
-			doll->pos.y += doll->vely * (float)server->delta;
+			doll->pos.x += doll->velx * (float) server->delta;
+			doll->pos.y += doll->vely * (float) server->delta;
 
 			if (vector2_dist(&doll->pos, &data->plr.pos) < 12)
 			{
@@ -242,8 +241,8 @@ bool tdoll_tick(Server* server, Entity* entity)
 
 	Packet pack;
 	PacketCreate(&pack, SERVER_DTTAILSDOLL_STATE);
-	PacketWrite(&pack, packet_write16, (uint16_t)doll->pos.x);
-	PacketWrite(&pack, packet_write16, (uint16_t)doll->pos.y);
+	PacketWrite(&pack, packet_write16, (uint16_t) doll->pos.x);
+	PacketWrite(&pack, packet_write16, (uint16_t) doll->pos.y);
 	PacketWrite(&pack, packet_write8, doll->state);
 	server_broadcast(server, &pack, false);
 

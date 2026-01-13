@@ -2,9 +2,9 @@
 
 bool pflift_init(Server* server, Entity* entity)
 {
-	(void)server;
-	
-	PFLift* lift = (PFLift*)entity;
+	(void) server;
+
+	PFLift* lift = (PFLift*) entity;
 	lift->pos.y = lift->start;
 
 	return true;
@@ -12,8 +12,8 @@ bool pflift_init(Server* server, Entity* entity)
 
 bool pflift_tick(Server* server, Entity* entity)
 {
-	Packet pack;
-	PFLift* lift = (PFLift*)entity;
+	Packet	pack;
+	PFLift* lift = (PFLift*) entity;
 
 	if (!lift->activated)
 	{
@@ -26,7 +26,7 @@ bool pflift_tick(Server* server, Entity* entity)
 				PacketCreate(&pack, SERVER_PFLIFT_STATE);
 				PacketWrite(&pack, packet_write8, 3);
 				PacketWrite(&pack, packet_write8, lift->lid);
-				PacketWrite(&pack, packet_write16, (uint16_t)lift->start);
+				PacketWrite(&pack, packet_write16, (uint16_t) lift->start);
 				server_broadcast(server, &pack, true);
 			}
 		}
@@ -36,9 +36,9 @@ bool pflift_tick(Server* server, Entity* entity)
 	if (lift->pos.y > lift->end)
 	{
 		if (lift->speed < 7.f)
-			lift->speed += 0.052f * (float)server->delta;
+			lift->speed += 0.052f * (float) server->delta;
 
-		lift->pos.y -= lift->speed * (float)server->delta;
+		lift->pos.y -= lift->speed * (float) server->delta;
 	}
 	else
 	{
@@ -46,10 +46,10 @@ bool pflift_tick(Server* server, Entity* entity)
 		PacketWrite(&pack, packet_write8, 2);
 		PacketWrite(&pack, packet_write8, lift->lid);
 		PacketWrite(&pack, packet_write16, lift->activator);
-		PacketWrite(&pack, packet_write16, (uint16_t)lift->pos.y);
+		PacketWrite(&pack, packet_write16, (uint16_t) lift->pos.y);
 		server_broadcast(server, &pack, true);
-		
-		lift->timer = (uint16_t)(1.5f * TICKSPERSEC);
+
+		lift->timer = (uint16_t) (1.5f * TICKSPERSEC);
 		lift->activated = false;
 		lift->activator = 0;
 	}
@@ -58,7 +58,7 @@ bool pflift_tick(Server* server, Entity* entity)
 	PacketWrite(&pack, packet_write8, 1);
 	PacketWrite(&pack, packet_write8, lift->lid);
 	PacketWrite(&pack, packet_write16, lift->activator);
-	PacketWrite(&pack, packet_write16, (uint16_t)lift->pos.y);
+	PacketWrite(&pack, packet_write16, (uint16_t) lift->pos.y);
 	server_broadcast(server, &pack, false);
 
 	return true;

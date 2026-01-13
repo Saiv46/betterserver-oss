@@ -1,5 +1,5 @@
-#include <Vote.h>
 #include <States.h>
+#include <Vote.h>
 
 bool vote_init(Server* server, Vote* vote, VoteType type, uint16_t id)
 {
@@ -9,13 +9,13 @@ bool vote_init(Server* server, Vote* vote, VoteType type, uint16_t id)
 
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* peer = (PeerData*)server->peers.ptr[i];
+		PeerData* peer = (PeerData*) server->peers.ptr[i];
 		if (!peer)
 			continue;
-		
+
 		peer->can_vote = (peer->id != id);
-		
-		if(peer->can_vote)
+
+		if (peer->can_vote)
 			vote->votetotal++;
 	}
 

@@ -1,14 +1,14 @@
-#include <entities/VVLava.h>
 #include <CMath.h>
+#include <entities/VVLava.h>
 
 bool lava_tick(Server* server, Entity* entity)
 {
-	Lava* lv = (Lava*)entity;
+	Lava* lv = (Lava*) entity;
 	switch (lv->state)
 	{
 		case LV_IDLE: // Move using sin
 		{
-			lv->pos.y = lv->start + sinf((float)lv->timer / 25.0f) * 6;
+			lv->pos.y = lv->start + sinf((float) lv->timer / 25.0f) * 6;
 
 			lv->timer -= server->delta;
 			if (lv->timer <= 0)
@@ -21,7 +21,7 @@ bool lava_tick(Server* server, Entity* entity)
 		{
 			if (lv->pos.y < lv->start + 20)
 			{
-				lv->pos.y += 0.15f * (float)server->delta;
+				lv->pos.y += 0.15f * (float) server->delta;
 			}
 			else
 				lv->state = LV_RAISE;
@@ -36,7 +36,7 @@ bool lava_tick(Server* server, Entity* entity)
 				lv->pos.y -= lv->vel;
 
 				if (lv->vel < 5)
-					lv->vel += 0.08f * (float)server->delta;
+					lv->vel += 0.08f * (float) server->delta;
 				else
 					lv->vel = 5;
 			}
@@ -52,7 +52,7 @@ bool lava_tick(Server* server, Entity* entity)
 
 		case LV_MOVE: // move on spot
 		{
-			lv->pos.y = (lv->start - lv->dist) + sinf((float)lv->timer / 25.0f) * 6;
+			lv->pos.y = (lv->start - lv->dist) + sinf((float) lv->timer / 25.0f) * 6;
 
 			lv->timer -= server->delta;
 			if (lv->timer <= 0)
@@ -64,10 +64,10 @@ bool lava_tick(Server* server, Entity* entity)
 		{
 			if (lv->start > lv->pos.y)
 			{
-				lv->pos.y += lv->vel * (float)server->delta;
+				lv->pos.y += lv->vel * (float) server->delta;
 
 				if (lv->vel < 5)
-					lv->vel += 0.08f * (float)server->delta;
+					lv->vel += 0.08f * (float) server->delta;
 				else
 					lv->vel = 5;
 			}

@@ -1,12 +1,12 @@
-﻿#include <maps/HauntingDream.h>
+﻿#include <States.h>
 #include <entities/HDDoor.h>
-#include <States.h>
+#include <maps/HauntingDream.h>
 
 bool hd_init(Server* server)
 {
-	RAssert(map_time(server, 3.42 * TICKSPERSEC, 20)); //205
+	RAssert(map_time(server, 3.42 * TICKSPERSEC, 20)); // 205
 	RAssert(map_ring(server, 5));
-	RAssert(game_spawn(server, (Entity*)&(MakeHDDoor()), sizeof(HDDoor), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeHDDoor()), sizeof(HDDoor), NULL));
 
 	return true;
 }
@@ -22,9 +22,9 @@ bool hd_tcpmsg(PeerData* v, Packet* packet)
 		{
 			AssertOrDisconnect(v->server, v->in_game);
 			HDDoor* door;
-			if (!game_find(v->server, (Entity**)&door, "hddoor", 1))
+			if (!game_find(v->server, (Entity**) &door, "hddoor", 1))
 				break;
-			
+
 			hddoor_toggle(v->server, door);
 			break;
 		}

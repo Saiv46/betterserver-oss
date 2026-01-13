@@ -2,7 +2,7 @@
 
 bool mjew_tick(Server* server, Entity* entity)
 {
-	MJew* ass = (MJew*)entity;
+	MJew* ass = (MJew*) entity;
 	if (ass->timer >= ass->next_time)
 	{
 		switch (ass->state)

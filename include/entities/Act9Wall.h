@@ -9,8 +9,8 @@ typedef struct
 {
 	ENTITY_BODY
 
-	uint8_t	 wid;
-	double	 start_time;
+	uint8_t wid;
+	double	start_time;
 } Act9Wall;
 #define MakeAct9Wall(wid, x, y) ((Act9Wall) { MakeEntity("act9wall", x, y) act9wall_init, act9wall_tick, NULL, wid, 0 })
 

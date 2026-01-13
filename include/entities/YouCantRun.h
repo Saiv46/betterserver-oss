@@ -12,10 +12,10 @@ typedef struct
 	{
 		YCC_NONE,
 		YCC_SOME
-	}			state;
-	double		timer;
-	uint8_t		smoke_id;
-	uint8_t		activated;
+	} state;
+	double	timer;
+	uint8_t smoke_id;
+	uint8_t activated;
 } YCRController;
 #define MakeYCRCtrl() ((YCRController) { MakeEntity("ycrctrl", 0, 0) NULL, ycrctrl_tick, NULL, YCC_NONE, 0, 0, 0 })
 

@@ -7,6 +7,6 @@ typedef int utf8_char;
 
 utf8_char utf8_tolower(utf8_char c);
 utf8_char utf8_get(const char* str, int index);
-size_t utf8_strlen(const char* str);
+size_t	  utf8_strlen(const char* str);
 
 #endif

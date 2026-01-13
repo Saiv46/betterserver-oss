@@ -1,9 +1,9 @@
-#include <entities/TCAcid.h>
 #include <CMath.h>
+#include <entities/TCAcid.h>
 
 bool acid_tick(Server* server, Entity* entity)
 {
-	Acid* ac = (Acid*)entity;
+	Acid* ac = (Acid*) entity;
 
 	if (ac->timer >= (4 * TICKSPERSEC))
 	{

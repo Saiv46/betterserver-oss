@@ -15,11 +15,11 @@ typedef struct
 		MLV_RAISE,
 		MLV_MOVE,
 		MLV_LOWER
-	}			state;
-	double		timer;
-	float		start;
-	float		dist;
-	float		vel;
+	} state;
+	double timer;
+	float  start;
+	float  dist;
+	float  vel;
 
 } MLava;
 #define MakeMLava(start, dist) ((MLava) { MakeEntity("mlava", 0, start) NULL, mlava_tick, NULL, MLV_IDLE, 5 * TICKSPERSEC, start, dist, 0 })

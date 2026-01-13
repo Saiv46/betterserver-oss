@@ -9,7 +9,7 @@ bool dylist_create(DyList* list, size_t max_capacity)
 	memset(list, 0, sizeof(DyList));
 	list->capacity = max_capacity;
 	list->noitems = 0;
-	list->ptr = (void**)malloc(list->capacity * sizeof(void*));
+	list->ptr = (void**) malloc(list->capacity * sizeof(void*));
 
 	if (!list->ptr)
 		return false;

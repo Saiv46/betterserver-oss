@@ -3,7 +3,7 @@
 
 bool npctrl_tick(Server* server, Entity* entity)
 {
-	NPController* ctrl = (NPController*)entity;
+	NPController* ctrl = (NPController*) entity;
 	if (server->game.time_sec <= TICKSPERSEC && !ctrl->balls)
 	{
 		ctrl->timer = 5 * TICKSPERSEC;
@@ -43,7 +43,7 @@ bool npctrl_tick(Server* server, Entity* entity)
 				PacketCreate(&pack, SERVER_NPCONTROLLER_STATE);
 				PacketWrite(&pack, packet_write8, 1);
 				PacketWrite(&pack, packet_write8, ctrl->stage % 4);
-				PacketWrite(&pack, packet_write8, (uint8_t)fmax(ctrl->stage - 1, 0) % 4);
+				PacketWrite(&pack, packet_write8, (uint8_t) fmax(ctrl->stage - 1, 0) % 4);
 				server_broadcast(server, &pack, true);
 
 				ctrl->state = NPC_NONE;

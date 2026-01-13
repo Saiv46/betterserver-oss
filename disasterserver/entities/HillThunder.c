@@ -1,9 +1,9 @@
-#include <entities/HillThunder.h>
 #include <CMath.h>
+#include <entities/HillThunder.h>
 
 bool thunder_tick(Server* server, Entity* entity)
 {
-	Thunder* th = (Thunder*)entity;
+	Thunder* th = (Thunder*) entity;
 
 	if (th->timer <= 2 * TICKSPERSEC && !th->flag)
 	{

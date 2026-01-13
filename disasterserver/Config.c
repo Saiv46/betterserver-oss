@@ -1,22 +1,21 @@
 #include <Config.h>
 #include <Log.h>
 #include <cJSON.h>
-#include <stdio.h>
+#include <io/Dir.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <io/Dir.h>
 
 #ifdef SYS_ANDROID
-	#include <Android.h>
+#include <Android.h>
 #endif
 
 #ifdef SYS_USE_SDL2
 #include <ui/Main.h>
 #endif
 
-SERVER_API Config g_config =
-{
+SERVER_API Config g_config = {
 	.port = 8606,
 	.server_count = 1,
 
@@ -34,12 +33,12 @@ SERVER_API Config g_config =
 	.pride = true
 };
 
-cJSON*	g_bans = NULL;
-cJSON*	g_timeouts = NULL;
-cJSON*	g_ops = NULL;
-Mutex	g_banMut;
-Mutex	g_timeoutMut;
-Mutex	g_opMut;
+cJSON* g_bans = NULL;
+cJSON* g_timeouts = NULL;
+cJSON* g_ops = NULL;
+Mutex  g_banMut;
+Mutex  g_timeoutMut;
+Mutex  g_opMut;
 
 bool write_default(const char* filename, const char* default_str)
 {
@@ -91,7 +90,7 @@ bool collection_init(cJSON** output, const char* file, const char* default_value
 
 	fseek(f, 0, SEEK_END);
 	size_t len = ftell(f);
-	char* buffer = malloc(len);
+	char*  buffer = malloc(len);
 	if (!buffer)
 	{
 		Warn("Failed to allocate buffer for a list!");
@@ -119,7 +118,7 @@ bool collection_init(cJSON** output, const char* file, const char* default_value
 bool config_init(void)
 {
 	MutexCreate(g_config.map_list_lock);
-	
+
 	// Try to open config
 	FILE* file = fopen(CONFIG_FILE, "r");
 	if (!file)
@@ -135,7 +134,7 @@ bool config_init(void)
 		}
 	}
 
-	char buffer[1024] = { 0 };
+	char   buffer[1024] = { 0 };
 	size_t len = fread(buffer, 1, 1024, file);
 	fclose(file);
 
@@ -148,13 +147,13 @@ bool config_init(void)
 	else
 		Debug("%s loaded.", CONFIG_FILE);
 
-	g_config.port =			(int32_t)cJSON_GetNumberValue(cJSON_GetObjectItemCaseSensitive(json, "port"));
-	g_config.server_count = (int32_t)cJSON_GetNumberValue(cJSON_GetObjectItemCaseSensitive(json, "server_count"));
-	g_config.ping_limit =	(int32_t)cJSON_GetNumberValue(cJSON_GetObjectItemCaseSensitive(json, "ping_limit"));
-	g_config.log_file =		cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(json, "log_file"));
-	g_config.log_debug =	cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(json, "log_debug"));
-	g_config.anticheat =	cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(json, "anticheat"));
-	g_config.pride =		cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(json, "pride"));
+	g_config.port = (int32_t) cJSON_GetNumberValue(cJSON_GetObjectItemCaseSensitive(json, "port"));
+	g_config.server_count = (int32_t) cJSON_GetNumberValue(cJSON_GetObjectItemCaseSensitive(json, "server_count"));
+	g_config.ping_limit = (int32_t) cJSON_GetNumberValue(cJSON_GetObjectItemCaseSensitive(json, "ping_limit"));
+	g_config.log_file = cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(json, "log_file"));
+	g_config.log_debug = cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(json, "log_debug"));
+	g_config.anticheat = cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(json, "anticheat"));
+	g_config.pride = cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(json, "pride"));
 
 	snprintf(g_config.motd, 256, "%s", cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(json, "motd")));
 	cJSON_Delete(json);
@@ -164,9 +163,9 @@ init_balls:
 	MutexCreate(g_banMut);
 	MutexCreate(g_opMut);
 
-	RAssert(collection_init(&g_timeouts,	TIMEOUTS_FILE,	"{}"));
-	RAssert(collection_init(&g_bans,		BANS_FILE,		"{}"));
-	RAssert(collection_init(&g_ops,		OPERATORS_FILE, "{ \"127.0.0.1\": \"Host (127.0.0.1)\" }"));
+	RAssert(collection_init(&g_timeouts, TIMEOUTS_FILE, "{}"));
+	RAssert(collection_init(&g_bans, BANS_FILE, "{}"));
+	RAssert(collection_init(&g_ops, OPERATORS_FILE, "{ \"127.0.0.1\": \"Host (127.0.0.1)\" }"));
 
 	if (!g_config.anticheat)
 	{
@@ -218,7 +217,6 @@ bool ban_add(const char* nickname, const char* udid, const char* ip)
 
 		if (changed)
 			res = collection_save(BANS_FILE, g_bans);
-		
 	}
 	MutexUnlock(g_banMut);
 
@@ -245,7 +243,7 @@ bool ban_revoke(const char* udid, const char* ip)
 			changed = true;
 		}
 
-		if(changed)
+		if (changed)
 			res = collection_save(BANS_FILE, g_bans);
 	}
 	MutexUnlock(g_banMut);
@@ -285,7 +283,7 @@ bool timeout_set(const char* nickname, const char* ip, const char* udid, uint64_
 			cJSON_AddItemToArray(root, js);
 
 			// store timestamp
-			js = cJSON_CreateNumber((double)timestamp);
+			js = cJSON_CreateNumber((double) timestamp);
 			cJSON_AddItemToArray(root, js);
 
 			cJSON_AddItemToObject(g_timeouts, ip, root);
@@ -313,7 +311,7 @@ bool timeout_set(const char* nickname, const char* ip, const char* udid, uint64_
 			cJSON_AddItemToArray(root, js);
 
 			// store timestamp
-			js = cJSON_CreateNumber((double)timestamp);
+			js = cJSON_CreateNumber((double) timestamp);
 			cJSON_AddItemToArray(root, js);
 
 			cJSON_AddItemToObject(g_timeouts, udid, root);
@@ -375,15 +373,15 @@ bool timeout_check(const char* udid, const char* ip, uint64_t* result)
 	{
 		cJSON* obj = cJSON_GetObjectItem(g_timeouts, ip);
 
-		if(!obj)
+		if (!obj)
 			obj = cJSON_GetObjectItem(g_timeouts, udid);
 
 		if (obj)
 		{
 			cJSON* timeout = cJSON_GetArrayItem(obj, 1);
-			
+
 			if (timeout)
-				*result = (uint64_t)cJSON_GetNumberValue(timeout);
+				*result = (uint64_t) cJSON_GetNumberValue(timeout);
 			else
 				Warn("Missing timestamp in array");
 		}

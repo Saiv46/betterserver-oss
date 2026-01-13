@@ -12,7 +12,7 @@ typedef struct
 	{
 		NPC_NONE,
 		NPC_PREPARE
-	}		state;
+	} state;
 	uint8_t stage;
 	double	timer;
 	bool	balls;

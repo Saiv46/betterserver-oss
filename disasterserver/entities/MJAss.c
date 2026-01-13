@@ -2,7 +2,7 @@
 
 bool mass_tick(Server* server, Entity* entity)
 {
-	MAss* ass = (MAss*)entity;
+	MAss* ass = (MAss*) entity;
 
 	if (ass->timer >= ass->next_time)
 	{

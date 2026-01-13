@@ -2,7 +2,7 @@
 
 bool lceye_tick(Server* server, Entity* entity)
 {
-	LCEye* eye = (LCEye*)entity;
+	LCEye* eye = (LCEye*) entity;
 
 	if (eye->cooldown > 0)
 	{
@@ -40,11 +40,11 @@ bool lceye_update(Server* server, LCEye* eye)
 {
 	Packet pack;
 	PacketCreate(&pack, SERVER_LCEYE_STATE);
-	PacketWrite(&pack, packet_write8,  (uint8_t)eye->eye_id);
-	PacketWrite(&pack, packet_write8,  eye->used);
+	PacketWrite(&pack, packet_write8, (uint8_t) eye->eye_id);
+	PacketWrite(&pack, packet_write8, eye->used);
 	PacketWrite(&pack, packet_write16, eye->use_id);
-	PacketWrite(&pack, packet_write8,  (uint8_t)eye->target);
-	PacketWrite(&pack, packet_write8,  eye->charge);
+	PacketWrite(&pack, packet_write8, (uint8_t) eye->target);
+	PacketWrite(&pack, packet_write8, eye->charge);
 	server_broadcast(server, &pack, true);
 
 	return true;

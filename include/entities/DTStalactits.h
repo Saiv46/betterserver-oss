@@ -9,12 +9,12 @@ typedef struct
 {
 	ENTITY_BODY
 
-	uint8_t		sid;
-	bool		state;
-	bool		show;
-	uint16_t	sx, sy;
-	double		timer;
-	float		vel;
+	uint8_t	 sid;
+	bool	 state;
+	bool	 show;
+	uint16_t sx, sy;
+	double	 timer;
+	float	 vel;
 } DTStalactits;
 #define MakeDTStalactiti(id, x, y) ((DTStalactits) { MakeEntity("dttits", x, y) dtst_init, dtst_tick, NULL, id, 0, 1, x, y, 0, 0 })
 

@@ -1,20 +1,20 @@
+#include <CMath.h>
+#include <Colors.h>
+#include <DyList.h>
+#include <Palette.h>
+#include <Player.h>
+#include <Server.h>
+#include <States.h>
+#include <entities/BlackRing.h>
+#include <entities/CreamRing.h>
+#include <entities/EggmanTracker.h>
+#include <entities/ExellerClone.h>
+#include <entities/Ring.h>
+#include <entities/TailsProjectile.h>
 #include <io/Time.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <time.h>
-#include <Player.h>
-#include <States.h>
-#include <CMath.h>
-#include <DyList.h>
-#include <Server.h>
-#include <Palette.h>
-#include <Colors.h>
-#include <entities/Ring.h>
-#include <entities/CreamRing.h>
-#include <entities/BlackRing.h>
-#include <entities/TailsProjectile.h>
-#include <entities/EggmanTracker.h>
-#include <entities/ExellerClone.h>
 
 bool game_end(Server* server, Ending ending, bool achiv)
 {
@@ -68,11 +68,11 @@ bool game_state_check(Server* server)
 	{
 		for (size_t i = 0; i < server->peers.capacity; i++)
 		{
-			PeerData* v = (PeerData*)server->peers.ptr[i];
+			PeerData* v = (PeerData*) server->peers.ptr[i];
 			if (!v)
 				continue;
 
-			if(!v->in_game)
+			if (!v->in_game)
 				continue;
 
 			if (v->plr.flags & PLAYER_ESCAPED)
@@ -110,12 +110,11 @@ bool game_init(int exe, int8_t map, Server* server)
 	RAssert(server_ingame(server) > 1);
 
 	server->state = ST_GAME;
-	server->game = (Game)
-	{
+	server->game = (Game) {
 		.map = map,
 		.exe = exe,
 		.bring_state = BS_NONE,
-		.bring_loc = (uint8_t)rand(),
+		.bring_loc = (uint8_t) rand(),
 		.sudden_death = false,
 		.started = false,
 		.end = 0.0,
@@ -140,7 +139,7 @@ bool game_init(int exe, int8_t map, Server* server)
 
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
 
@@ -148,7 +147,7 @@ bool game_init(int exe, int8_t map, Server* server)
 			continue;
 
 		memset(&v->plr, 0, sizeof(Player));
-		
+
 		if (v->id == server->game.exe)
 			SET_FLAG(v->plr.flags, PLAYER_KILLER);
 
@@ -165,7 +164,7 @@ bool game_init(int exe, int8_t map, Server* server)
 
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
 
@@ -174,7 +173,7 @@ bool game_init(int exe, int8_t map, Server* server)
 
 		for (size_t j = 0; j < server->peers.capacity; j++)
 		{
-			PeerData* er = (PeerData*)server->peers.ptr[j];
+			PeerData* er = (PeerData*) server->peers.ptr[j];
 			if (!er)
 				continue;
 
@@ -212,7 +211,7 @@ bool game_uninit(Server* server, bool show_results)
 	{
 		for (size_t i = 0; i < server->game.entities.capacity; i++)
 		{
-			Entity* entity = (Entity*)server->game.entities.ptr[i];
+			Entity* entity = (Entity*) server->game.entities.ptr[i];
 			if (!entity)
 				continue;
 
@@ -223,7 +222,7 @@ bool game_uninit(Server* server, bool show_results)
 		// Clean up after game
 		for (size_t i = 0; i < server->game.left.capacity; i++)
 		{
-			PeerData* data = (PeerData*)server->game.left.ptr[i];
+			PeerData* data = (PeerData*) server->game.left.ptr[i];
 			if (!data)
 				continue;
 
@@ -239,18 +238,18 @@ bool game_spawn(Server* server, Entity* entity, size_t len, Entity** out)
 {
 	entity->id = ++server->game.entid;
 	Debug("Allocated entity \"%s\" (id %d, size %d)", entity->tag, entity->id, len);
-	
-	Entity* ent = (Entity*)malloc(len);
-	if(!ent)
+
+	Entity* ent = (Entity*) malloc(len);
+	if (!ent)
 		return false;
-	 
+
 	memcpy(ent, entity, len);
 	if (ent->init && !ent->init(server, ent))
 	{
 		free(ent);
 		return false;
 	}
-	
+
 	dylist_push(&server->game.entities, ent);
 	if (out)
 		*out = ent;
@@ -259,12 +258,12 @@ bool game_spawn(Server* server, Entity* entity, size_t len, Entity** out)
 
 bool game_despawn(Server* server, Entity** out, uint16_t id)
 {
-	bool res = true;
+	bool	res = true;
 	Entity* tar = NULL;
 
 	for (size_t i = 0; i < server->game.entities.capacity; i++)
 	{
-		Entity* entity = (Entity*)server->game.entities.ptr[i];
+		Entity* entity = (Entity*) server->game.entities.ptr[i];
 		if (!entity)
 			continue;
 
@@ -296,7 +295,7 @@ int game_find(Server* server, Entity** out, char* tag, size_t count)
 
 	for (size_t it = 0; it < server->game.entities.capacity; it++)
 	{
-		Entity* entity = (Entity*)server->game.entities.ptr[it];
+		Entity* entity = (Entity*) server->game.entities.ptr[it];
 		if (!entity)
 			continue;
 
@@ -308,7 +307,7 @@ int game_find(Server* server, Entity** out, char* tag, size_t count)
 			else
 				out[i++] = entity;
 
-			if ((size_t)i >= count)
+			if ((size_t) i >= count)
 				break;
 		}
 	}
@@ -365,11 +364,11 @@ bool game_checkstart(Server* server)
 	uint8_t cnt = 0;
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
-		
-		if(!v->in_game)
+
+		if (!v->in_game)
 			continue;
 
 		if (v->plr.ready)
@@ -382,7 +381,7 @@ bool game_checkstart(Server* server)
 		PacketCreate(&pack, SERVER_GAME_PLAYERS_READY);
 		server_broadcast(server, &pack, true);
 
-		srand((unsigned int)time(NULL));
+		srand((unsigned int) time(NULL));
 		RAssert(g_mapList[server->game.map].cb.init(server));
 		Info(LOG_YLW "Game started! " LOG_RST "(Time %ds)", server->game.time_sec);
 
@@ -402,16 +401,16 @@ bool game_demonize(Server* server, PeerData* data)
 
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
-		
-		if(!v->in_game)
+
+		if (!v->in_game)
 			continue;
 
 		if (v->id == server->game.exe)
 			continue;
-		
+
 		if (v->plr.flags & PLAYER_DEMONIZED)
 			demonized++;
 
@@ -422,7 +421,7 @@ bool game_demonize(Server* server, PeerData* data)
 	{
 		DEL_FLAG(data->plr.flags, PLAYER_DEAD);
 		SET_FLAG(data->plr.flags, PLAYER_DEMONIZED);
-		
+
 		data->plr.stats.rings = 0;
 
 		// reset cooldown
@@ -465,7 +464,7 @@ bool game_demonize(Server* server, PeerData* data)
 
 bool game_state_join(PeerData* v)
 {
-	(void)v; // dont fucking remember why this exists ~~
+	(void) v; // dont fucking remember why this exists ~~
 	return true;
 }
 
@@ -479,7 +478,7 @@ bool game_state_left(PeerData* v)
 
 	RAssert(g_mapList[v->server->game.map].cb.left(v));
 
-	if(server_ingame(v->server) <= 1)
+	if (server_ingame(v->server) <= 1)
 		return game_uninit(v->server, false);
 
 	if (!v->server->game.started)
@@ -490,7 +489,7 @@ bool game_state_left(PeerData* v)
 		return game_checkstart(v->server);
 	}
 
-	PeerData* data = (PeerData*)malloc(sizeof(PeerData));
+	PeerData* data = (PeerData*) malloc(sizeof(PeerData));
 	RAssert(data);
 	memcpy(data, v, sizeof(PeerData));
 
@@ -510,23 +509,23 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 	// Read header
 	PacketRead(passtrough, packet, packet_read8, uint8_t);
 	PacketRead(type, packet, packet_read8, uint8_t);
-	
+
 	switch (type)
 	{
 		default:
 			RAssert(server_msg_handle(v->server, type, v, packet));
 			break;
-			
+
 		case CLIENT_PLAYER_POTATER:
 		case CLIENT_SOUND_EMIT:
-		case CLIENT_SPAWN_EFFECT: 
+		case CLIENT_SPAWN_EFFECT:
 		case CLIENT_PET_PALETTE:
 		case CLIENT_SPRING_USE:
 		case CLIENT_MERCOIN_BONUS:
 		case CLIENT_RING_BROKE:
 		{
 			AssertOrDisconnect(v->server, v->in_game);
-			server_broadcast_ex(v->server, packet, true,  v->id);
+			server_broadcast_ex(v->server, packet, true, v->id);
 			break;
 		}
 
@@ -534,7 +533,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 		{
 			AssertOrDisconnect(v->server, v->in_game);
 			AssertOrDisconnect(v->server, !g_config.anticheat || palette_player_validate(v, packet));
-			server_broadcast_ex(v->server, packet, true,  v->id);
+			server_broadcast_ex(v->server, packet, true, v->id);
 			break;
 		}
 
@@ -633,7 +632,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 					PacketRead(id, packet, packet_read16, uint16_t);
 					PacketRead(dmg, packet, packet_read16, uint16_t);
 					PacketRead(hp, packet, packet_read16, uint16_t);
-					
+
 					PeerData* data = server_find_peer(v->server, id);
 					if (!data)
 						break;
@@ -677,7 +676,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			AssertOrDisconnect(v->server, game_find(v->server, NULL, "tproj", 10) <= 2);
 
 			int cooldown_id = v->plr.flags & PLAYER_DEMONIZED ? ETAILS_RECHARGE : TAILS_RECHARGE;
-			if(v->server->game.cooldowns[cooldown_id] > 0)
+			if (v->server->game.cooldowns[cooldown_id] > 0)
 			{
 				char msg[256];
 				snprintf(msg, 256, "is_exe: %d, cool_id: %s, remaining_cooldown: %f", v->plr.flags & PLAYER_DEMONIZED, cooldown_id == TAILS_RECHARGE ? "TAILS_RECHARGE" : "ETAILS_RECHARGE", v->server->game.cooldowns[cooldown_id]);
@@ -728,7 +727,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			if (!check_balls)
 				break;
 
-			RAssert(game_spawn(v->server, (Entity*)&(MakeTailsProj(x, y, v->id, dir, v->plr.flags & PLAYER_DEMONIZED, chg, dmg)), sizeof(TProjectile), NULL));
+			RAssert(game_spawn(v->server, (Entity*) &(MakeTailsProj(x, y, v->id, dir, v->plr.flags & PLAYER_DEMONIZED, chg, dmg)), sizeof(TProjectile), NULL));
 			v->server->game.cooldowns[cooldown_id] = 10 * TICKSPERSEC;
 			break;
 		}
@@ -751,7 +750,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			PacketRead(eid, packet, packet_read16, uint16_t);
 
 			Ring* ent = NULL;
-			bool res = game_despawn(v->server, (Entity**)&ent, eid);
+			bool  res = game_despawn(v->server, (Entity**) &ent, eid);
 			if (res)
 			{
 				PeerData* data = server_find_peer(v->server, v->id);
@@ -800,27 +799,27 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			PacketRead(y, packet, packet_read16, uint16_t);
 			PacketRead(red_ring, packet, packet_read8, uint8_t);
 
-			Vector2 pos = { (float)x, (float)y };
+			Vector2 pos = { (float) x, (float) y };
 			AssertOrDisconnect(v->server, vector2_dist(&pos, &v->plr.pos) <= 40);
 
 			static double PI = 0.0;
-			if(PI == 0.0) 
+			if (PI == 0.0)
 				PI = acos(-1);
 
 			if (red_ring)
-			{				
+			{
 				CreamRing* rings[128];
-				int cnt = game_find(v->server, (Entity**)rings, "cring", 128);
-				
-				for(int i = 0; i < cnt; i++)
+				int		   cnt = game_find(v->server, (Entity**) rings, "cring", 128);
+
+				for (int i = 0; i < cnt; i++)
 				{
 					CreamRing* ring = rings[i];
-					if(!ring->red)
+					if (!ring->red)
 						continue;
 
 					AssertOrDisconnect(v->server, vector2_dist(&ring->pos, &pos) >= 150);
 				}
-				
+
 				uint16_t posX[2] = { 25, -27 };
 				uint16_t posY[2] = { 0, 0 };
 				for (int i = 0; i < 2; i++)
@@ -828,7 +827,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 					uint16_t rX = x + posX[i];
 					uint16_t rY = y + posY[i];
 
-					RAssert(game_spawn(v->server, (Entity*)&(MakeCreamRing(rX, rY, red_ring)), sizeof(CreamRing), NULL));
+					RAssert(game_spawn(v->server, (Entity*) &(MakeCreamRing(rX, rY, red_ring)), sizeof(CreamRing), NULL));
 				}
 			}
 			else
@@ -840,7 +839,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 					uint16_t rX = x + posX[i];
 					uint16_t rY = y + posY[i];
 
-					RAssert(game_spawn(v->server, (Entity*)&(MakeCreamRing(rX, rY, red_ring)), sizeof(CreamRing), NULL));
+					RAssert(game_spawn(v->server, (Entity*) &(MakeCreamRing(rX, rY, red_ring)), sizeof(CreamRing), NULL));
 				}
 			}
 
@@ -854,12 +853,12 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			AssertOrDisconnect(v->server, v->id != v->server->game.exe);
 			AssertOrDisconnect(v->server, v->surv_char == CH_EGGMAN);
 			AssertOrDisconnect(v->server, v->server->game.cooldowns[EGGTRACK_RECHARGE] <= 0);
-			
+
 			PacketRead(x, packet, packet_read16, uint16_t);
 			PacketRead(y, packet, packet_read16, uint16_t);
-			
-			game_spawn(v->server, (Entity*)&(MakeEggTrack(x, y)), sizeof(EggTracker), NULL);
-			v->server->game.cooldowns[EGGTRACK_RECHARGE] = 10 * TICKSPERSEC; 
+
+			game_spawn(v->server, (Entity*) &(MakeEggTrack(x, y)), sizeof(EggTracker), NULL);
+			v->server->game.cooldowns[EGGTRACK_RECHARGE] = 10 * TICKSPERSEC;
 			break;
 		}
 
@@ -867,14 +866,14 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 		{
 			AssertOrDisconnect(v->server, v->in_game);
 			PacketRead(eid, packet, packet_read16, uint16_t);
-			
+
 			Entity* ents[50];
-			int found = game_find(v->server, ents, "eggtrack", 50);
+			int		found = game_find(v->server, ents, "eggtrack", 50);
 
 			for (int i = 0; i < found; i++)
 			{
-				EggTracker* entity = (EggTracker*)ents[i];
-				
+				EggTracker* entity = (EggTracker*) ents[i];
+
 				if (entity->id == eid)
 				{
 					entity->activ_id = v->id;
@@ -898,21 +897,21 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 
 			if (v->mod_tool)
 			{
-				RAssert(game_spawn(v->server, (Entity*)&(MakeCreamRing(x, y, false)), sizeof(CreamRing), NULL));
+				RAssert(game_spawn(v->server, (Entity*) &(MakeCreamRing(x, y, false)), sizeof(CreamRing), NULL));
 				break;
 			}
 
 			BRing* rings[128];
-			int cnt = game_find(v->server, (Entity**)rings, "bring", 128);
-			
+			int	   cnt = game_find(v->server, (Entity**) rings, "bring", 128);
+
 			Vector2 pos = { x, y };
-			for(int i = 0; i < cnt; i++)
+			for (int i = 0; i < cnt; i++)
 			{
 				BRing* ring = rings[i];
 				AssertOrDisconnect(v->server, vector2_dist(&ring->pos, &pos) >= 100);
 			}
-			
-			game_spawn(v->server, (Entity*)(&(MakeBlackRing(x, y))), sizeof(BRing), NULL);
+
+			game_spawn(v->server, (Entity*) (&(MakeBlackRing(x, y))), sizeof(BRing), NULL);
 			v->server->game.cooldowns[EXETIOR_BRING_SPAWN] = 10 * TICKSPERSEC;
 			break;
 		}
@@ -940,7 +939,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			PacketRead(x, packet, packet_readfloat, float);
 			PacketRead(y, packet, packet_readfloat, float);
 
-			if(!v->mod_tool) 
+			if (!v->mod_tool)
 			{
 				Packet pack;
 				PacketCreate(&pack, CLIENT_ERECTOR_BALLS);
@@ -950,9 +949,9 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			}
 			else
 			{
-				for(int i = -3; i < 3; i++)
+				for (int i = -3; i < 3; i++)
 				{
-					RAssert(game_spawn(v->server, (Entity*)&(MakeCreamRing(x + i * 8, y, false)), sizeof(CreamRing), NULL));
+					RAssert(game_spawn(v->server, (Entity*) &(MakeCreamRing(x + i * 8, y, false)), sizeof(CreamRing), NULL));
 				}
 			}
 
@@ -969,7 +968,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			PacketRead(x, packet, packet_read16, uint16_t);
 			PacketRead(y, packet, packet_read16, uint16_t);
 			PacketRead(dir, packet, packet_read8, int8_t);
-			game_spawn(v->server, (Entity*)&(MakeExellerClone(x, y, dir, v->id)), sizeof(ExellerClone), NULL);
+			game_spawn(v->server, (Entity*) &(MakeExellerClone(x, y, dir, v->id)), sizeof(ExellerClone), NULL);
 			break;
 		}
 
@@ -978,11 +977,11 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			AssertOrDisconnect(v->server, v->in_game);
 			AssertOrDisconnect(v->server, v->id == v->server->game.exe);
 			AssertOrDisconnect(v->server, v->exe_char == EX_EXELLER);
-			
+
 			PacketRead(eid, packet, packet_read16, uint16_t);
 
 			ExellerClone* clone;
-			if (game_despawn(v->server, (Entity**)&clone, eid))
+			if (game_despawn(v->server, (Entity**) &clone, eid))
 			{
 				if (v->mod_tool)
 				{
@@ -991,8 +990,8 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 					PacketWrite(&pack, packet_write8, 0);
 					PacketWrite(&pack, packet_write16, clone->id);
 					PacketWrite(&pack, packet_write16, clone->owner);
-					PacketWrite(&pack, packet_write16, (uint16_t)v->plr.pos.x);
-					PacketWrite(&pack, packet_write16, (uint16_t)v->plr.pos.y);
+					PacketWrite(&pack, packet_write16, (uint16_t) v->plr.pos.x);
+					PacketWrite(&pack, packet_write16, (uint16_t) v->plr.pos.y);
 					PacketWrite(&pack, packet_write8, clone->dir);
 					RAssert(packet_send(v->peer, &pack, true));
 					free(clone);
@@ -1008,7 +1007,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 				free(clone);
 				v->plr.ex_teleport = 60;
 			}
-			break; 
+			break;
 		}
 
 		case CLIENT_PLAYER_ESCAPED:
@@ -1063,7 +1062,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 
 			PacketCreate(&pack, SERVER_REVIVAL_STATUS);
 			PacketWrite(&pack, packet_write8, false)
-			PacketWrite(&pack, packet_write16, v->id);
+				PacketWrite(&pack, packet_write16, v->id);
 			server_broadcast(v->server, &pack, true);
 
 			if (dead)
@@ -1144,7 +1143,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 				// add itself to the list
 				{
 					bool has = false;
-					int ind = 0;
+					int	 ind = 0;
 
 					for (int i = 0; i < 5; i++)
 					{
@@ -1183,9 +1182,9 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 						break;
 
 					PeerData* data = server_find_peer(v->server, to_revive->plr.revival_init[i]);
-					if(!data)
+					if (!data)
 						continue;
-					
+
 					PacketCreate(&pack, SERVER_REVIVAL_RINGSUB);
 					packet_send(data->peer, &pack, true);
 
@@ -1215,7 +1214,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 
 			break;
 		}
-		
+
 		case CLIENT_PING:
 		{
 			if (!v->server->game.started)
@@ -1249,24 +1248,24 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			PacketRead(y, packet, packet_read16, uint16_t);
 			PacketRead(_xspd, packet, packet_read16, uint16_t);
 			PacketRead(_yspd, packet, packet_read16, uint16_t);
-			
+
 			PacketRead(state, packet, packet_read8, uint8_t);
 			PacketRead(_angle, packet, packet_read16, int16_t);
 			PacketRead(_index, packet, packet_read8, uint8_t);
 			PacketRead(_xscale, packet, packet_read8, int8_t);
 
 			Vector2 new_pos = { x, y };
-			#define PLAYER_ATTACKING 1 << 4
-			
+#define PLAYER_ATTACKING 1 << 4
+
 			int duration = 2000;
-			if(v->server->game.exe != v->id)
+			if (v->server->game.exe != v->id)
 			{
 				PacketRead(hp, packet, packet_read8, int8_t);
 				PacketRead(revival, packet, packet_read8, uint8_t);
 				PacketRead(rings, packet, packet_read16, int16_t);
 				PacketRead(flags, packet, packet_read8, uint8_t);
 
-				if(!(v->plr.flags & PLAYER_DEAD) && !(v->plr.flags & PLAYER_DEMONIZED))
+				if (!(v->plr.flags & PLAYER_DEAD) && !(v->plr.flags & PLAYER_DEMONIZED))
 				{
 					if (v->server->game.exe != v->id)
 					{
@@ -1289,7 +1288,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 				}
 
 				v->plr.is_attacking = flags & PLAYER_ATTACKING;
-				switch(v->surv_char)
+				switch (v->surv_char)
 				{
 					case CH_EGGMAN:
 					{
@@ -1304,9 +1303,9 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 				v->plr.is_attacking = flags & PLAYER_ATTACKING;
 			}
 
-			if(v->server->game.end <= 0 && v->plr.is_attacking)
+			if (v->server->game.end <= 0 && v->plr.is_attacking)
 			{
-				if(v->plr.attack_timer <= 0)
+				if (v->plr.attack_timer <= 0)
 				{
 					time_start(&v->plr.last_attack);
 					v->plr.attack_timer = 1;
@@ -1315,7 +1314,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 				{
 					double elapsed = time_end(&v->plr.last_attack);
 					v->plr.attack_timer += elapsed;
-					if(v->plr.attack_timer >= duration)
+					if (v->plr.attack_timer >= duration)
 					{
 						server_disconnect(v->server, v->peer, DR_KICKEDBYHOST, "nuh-uh!");
 						return true;
@@ -1325,9 +1324,9 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			}
 			else
 				v->plr.attack_timer = 0;
-			
+
 			// ping limit disabled
-			if(g_config.ping_limit == UINT16_MAX)
+			if (g_config.ping_limit == UINT16_MAX)
 			{
 				// Calc distance before setting new posx
 				float dist = vector2_dist(&v->plr.pos, &new_pos);
@@ -1344,13 +1343,13 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 								case 8:
 								case 6:
 									break;
-				
+
 								default:
 									server_disconnect(v->server, v->peer, DR_OTHER, "blud used a portal gun lmfao");
 									return true;
 							}
 						}
-				
+
 						if (dist > 60)
 						{
 							if (!player_add_error(v->server, v, 500))
@@ -1361,7 +1360,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 						v->plr.ex_teleport--;
 				}
 			}
-			
+
 			v->plr.pos = new_pos;
 			v->plr.timeout = 0;
 
@@ -1384,19 +1383,18 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 					{
 						// purpl men
 						server_disconnect(v->server, v->peer, DR_OTHER,
-							"@@@@@@@......@@@\n"
-							"@@@@@@@......@@@\n"
-							"@@@@@@@.......@@\n"
-							"@@@@@@@@@@@@....\n"
-							"@@@@@@@@@@......\n"
-							"....@@..........\n"
-							"................\n"
-							"@@@@@@@@@@@@....\n"
-							"@@@@@@@@@@@@....\n"
-							"@@@@@@@@@@@@@...\n"
-							"@@@@@@@@@@@@@...\n"
-							"@@@@@@@@@@@....."
-						);
+										  "@@@@@@@......@@@\n"
+										  "@@@@@@@......@@@\n"
+										  "@@@@@@@.......@@\n"
+										  "@@@@@@@@@@@@....\n"
+										  "@@@@@@@@@@......\n"
+										  "....@@..........\n"
+										  "................\n"
+										  "@@@@@@@@@@@@....\n"
+										  "@@@@@@@@@@@@....\n"
+										  "@@@@@@@@@@@@@...\n"
+										  "@@@@@@@@@@@@@...\n"
+										  "@@@@@@@@@@@.....");
 					}
 					break;
 				}
@@ -1415,7 +1413,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 				}
 			}
 
-			if(v->plr.state != state || time_end(&v->plr.last_packet) >= 15 * 2.9)
+			if (v->plr.state != state || time_end(&v->plr.last_packet) >= 15 * 2.9)
 			{
 				v->plr.state = state;
 				time_start(&v->plr.last_packet);
@@ -1439,7 +1437,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 
 	if (!v->server->game.started)
 	{
-		if(!v->plr.ready)
+		if (!v->plr.ready)
 		{
 			time_start(&v->plr.last_packet);
 			v->plr.ready = true;
@@ -1457,14 +1455,14 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 bool game_entity_tick(Server* server)
 {
 	int32_t entits[100];
-	int entit = 0;
+	int		entit = 0;
 
-	for(int i = 0; i < 100; i++)
+	for (int i = 0; i < 100; i++)
 		entits[i] = -1;
 
 	for (size_t i = 0; i < server->game.entities.capacity; i++)
 	{
-		Entity* ent = (Entity*)server->game.entities.ptr[i];
+		Entity* ent = (Entity*) server->game.entities.ptr[i];
 		if (!ent)
 			continue;
 
@@ -1477,7 +1475,7 @@ bool game_entity_tick(Server* server)
 		if (entits[i] == -1)
 			break;
 
-		game_despawn(server, NULL, (uint16_t)entits[i]);
+		game_despawn(server, NULL, (uint16_t) entits[i]);
 	}
 
 	return true;
@@ -1493,21 +1491,21 @@ bool game_player_tick(Server* server)
 		else
 			server->game.cooldowns[i] = 0;
 	}
-	
+
 	PeerData* exe = server_find_peer(server, server->game.exe);
-	if(!exe)
+	if (!exe)
 		return true;
 
 	bool exe_camp = false;
-	int survivors = 0, demonized = 0;
+	int	 survivors = 0, demonized = 0;
 
-	for(size_t i = 0; i < server->peers.capacity; i++)
+	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* data = (PeerData*)server->peers.ptr[i];
+		PeerData* data = (PeerData*) server->peers.ptr[i];
 		if (!data)
 			continue;
 
-		if(!data->in_game)
+		if (!data->in_game)
 			continue;
 
 		player_check_zone(server, data);
@@ -1524,7 +1522,7 @@ bool game_player_tick(Server* server)
 				if (avg_ping >= g_config.ping_limit)
 				{
 					char msg[130];
-					snprintf(msg, 130, "Bad connection, try picking closest region for better experience!\nYour average ping for last 20s: %dms", (int)avg_ping);
+					snprintf(msg, 130, "Bad connection, try picking closest region for better experience!\nYour average ping for last 20s: %dms", (int) avg_ping);
 					server_disconnect(server, data->peer, DR_OTHER, msg);
 					continue;
 				}
@@ -1534,7 +1532,7 @@ bool game_player_tick(Server* server)
 			}
 		}
 
-		if((data->plr.flags & PLAYER_DEAD) && !(data->plr.flags & PLAYER_CANTREVIVE) && vector2_dist(&exe->plr.pos, &data->plr.pos) < 300)
+		if ((data->plr.flags & PLAYER_DEAD) && !(data->plr.flags & PLAYER_CANTREVIVE) && vector2_dist(&exe->plr.pos, &data->plr.pos) < 300)
 			exe_camp = true;
 
 		if (exe->id != data->id && !(data->plr.flags & PLAYER_DEAD) && !(data->plr.flags & PLAYER_DEMONIZED))
@@ -1545,11 +1543,11 @@ bool game_player_tick(Server* server)
 				bool in_danger = exe && vector2_dist(&data->plr.pos, &exe->plr.pos) < 300;
 				if (in_danger)
 					data->plr.stats.danger_time += server->delta;
-				
-				if(server->game.map != 8 && server->game.map != 6)
+
+				if (server->game.map != 8 && server->game.map != 6)
 				{
 					// calc balls
-					uint32_t chunk = ((uint32_t)data->plr.pos.x / 480) + ((uint32_t)data->plr.pos.y / 270);
+					uint32_t chunk = ((uint32_t) data->plr.pos.x / 480) + ((uint32_t) data->plr.pos.y / 270);
 					if (data->plr.chunk != chunk)
 					{
 						data->plr.stats.braindead_time = 0;
@@ -1566,18 +1564,18 @@ bool game_player_tick(Server* server)
 
 			data->plr.stats.survive_time += server->delta;
 		}
-		
+
 		// subpussy revival time
-		if(data->plr.flags & PLAYER_DEAD && !(data->plr.flags & PLAYER_CANTREVIVE))
+		if (data->plr.flags & PLAYER_DEAD && !(data->plr.flags & PLAYER_CANTREVIVE))
 		{
-			if(data->plr.revival > 0)
+			if (data->plr.revival > 0)
 			{
 				data->plr.revival -= 0.0025 * server->delta;
-				
+
 				Packet pack;
-				if(data->plr.revival <= 0)
+				if (data->plr.revival <= 0)
 				{
-					for(int i = 0; i < 5; i++)
+					for (int i = 0; i < 5; i++)
 						data->plr.revival_init[i] = -1;
 
 					PacketCreate(&pack, SERVER_REVIVAL_STATUS);
@@ -1612,7 +1610,7 @@ bool game_player_tick(Server* server)
 			survivors++;
 	}
 
-	if(server->game.map != 8 && exe_camp)
+	if (server->game.map != 8 && exe_camp)
 		exe->plr.stats.camp_time += server->delta;
 
 	// Start demonization
@@ -1621,16 +1619,16 @@ bool game_player_tick(Server* server)
 		server->game.sudden_death = true;
 
 		PeerData* sort[6];
-		int len = 0;
+		int		  len = 0;
 		memset(sort, 0, sizeof(Player*) * 6);
 
 		for (size_t i = 0; i < server->peers.capacity; i++)
 		{
-			PeerData* data = (PeerData*)server->peers.ptr[i];
+			PeerData* data = (PeerData*) server->peers.ptr[i];
 			if (!data)
 				continue;
 
-			if(!data->in_game)
+			if (!data->in_game)
 				continue;
 
 			if (!(data->plr.flags & PLAYER_DEAD))
@@ -1645,7 +1643,7 @@ bool game_player_tick(Server* server)
 			{
 				double totalA = sort[i]->plr.death_timer_sec + (sort[i]->plr.death_timer / 60.0);
 				double totalB = sort[j]->plr.death_timer_sec + (sort[j]->plr.death_timer / 60.0);
-				
+
 				if (totalA > totalB)
 				{
 					PeerData* a = sort[i];
@@ -1665,11 +1663,11 @@ bool game_player_tick(Server* server)
 
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* data = (PeerData*)server->peers.ptr[i];
+		PeerData* data = (PeerData*) server->peers.ptr[i];
 		if (!data)
 			continue;
 
-		if(!data->in_game)
+		if (!data->in_game)
 			continue;
 
 		if (data->plr.flags & PLAYER_CANTREVIVE)
@@ -1678,17 +1676,17 @@ bool game_player_tick(Server* server)
 		if (data->plr.flags & PLAYER_DEAD && data->plr.death_timer_sec > 0)
 		{
 			Packet packet;
-			bool exe_near = false;
-			bool demonized_near = false;
+			bool   exe_near = false;
+			bool   demonized_near = false;
 
 			// check if exe is nearby
 			for (size_t j = 0; j < server->peers.capacity; j++)
 			{
-				PeerData* check = (PeerData*)server->peers.ptr[j];
+				PeerData* check = (PeerData*) server->peers.ptr[j];
 				if (!check)
 					continue;
 
-				if(!check->in_game)
+				if (!check->in_game)
 					continue;
 
 				if (check->id != server->game.exe && !(check->plr.flags & PLAYER_DEMONIZED))
@@ -1752,11 +1750,11 @@ bool game_state_tick(Server* server)
 
 			for (size_t j = 0; j < server->peers.capacity; j++)
 			{
-				PeerData* data = (PeerData*)server->peers.ptr[j];
+				PeerData* data = (PeerData*) server->peers.ptr[j];
 				if (!data)
 					continue;
 
-				if(!data->in_game)
+				if (!data->in_game)
 					continue;
 
 				if (!data->plr.ready)
@@ -1765,7 +1763,6 @@ bool game_state_tick(Server* server)
 					break;
 				}
 			}
-
 		}
 		return true;
 	}
@@ -1787,13 +1784,13 @@ bool game_state_tick(Server* server)
 
 		if (server->game.time_sec % server->game.ring_coff == 0)
 		{
-			if (!game_spawn(server, (Entity*)&(MakeRing()), sizeof(Ring), NULL))
+			if (!game_spawn(server, (Entity*) &(MakeRing()), sizeof(Ring), NULL))
 				Debug("Not enough space for rings");
 		}
 
 		Packet packet;
 		PacketCreate(&packet, SERVER_GAME_TIME_SYNC);
-		PacketWrite(&packet, packet_write16, (uint16_t)server->game.time_sec * TICKSPERSEC);
+		PacketWrite(&packet, packet_write16, (uint16_t) server->game.time_sec * TICKSPERSEC);
 		server_broadcast(server, &packet, true);
 
 		if (server->game.time_sec <= 0)

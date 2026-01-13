@@ -2,14 +2,14 @@
 
 bool spike_tick(Server* server, Entity* entity)
 {
-	SpikeController* ctrl = (SpikeController*)entity;
+	SpikeController* ctrl = (SpikeController*) entity;
 	ctrl->timer -= server->delta;
 	if (ctrl->timer > 0)
 		return true;
 
 	if (++ctrl->frame > 5)
 		ctrl->frame = 0;
-	
+
 	if (ctrl->frame == 0 || ctrl->frame == 2)
 		ctrl->timer = 2 * TICKSPERSEC;
 	else

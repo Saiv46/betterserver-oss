@@ -1,15 +1,15 @@
-#include <maps/LimpCity.h>
-#include <entities/LCEye.h>
 #include <entities/LCChain.h>
+#include <entities/LCEye.h>
+#include <maps/LimpCity.h>
 
 bool lc_init(Server* server)
 {
-	RAssert(map_time(server, 2.585 * TICKSPERSEC, 20)); //155
+	RAssert(map_time(server, 2.585 * TICKSPERSEC, 20)); // 155
 	RAssert(map_ring(server, 5));
 
-	RAssert(game_spawn(server, (Entity*)&(MakeLCEye(0)), sizeof(LCEye), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeLCEye(1)), sizeof(LCEye), NULL));
-	RAssert(game_spawn(server, (Entity*)&(MakeLCChain()), sizeof(LCChain), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeLCEye(0)), sizeof(LCEye), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeLCEye(1)), sizeof(LCEye), NULL));
+	RAssert(game_spawn(server, (Entity*) &(MakeLCChain()), sizeof(LCChain), NULL));
 
 	return true;
 }
@@ -30,7 +30,7 @@ bool lc_tcpmsg(PeerData* v, Packet* packet)
 			AssertOrDisconnect(v->server, v->in_game);
 
 			LCEye* eyes[2];
-			if (!game_find(v->server, (Entity**)eyes, "lceye", 2))
+			if (!game_find(v->server, (Entity**) eyes, "lceye", 2))
 				break;
 
 			LCEye* eye = eyes[nid];

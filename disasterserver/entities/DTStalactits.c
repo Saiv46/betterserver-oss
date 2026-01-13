@@ -3,14 +3,14 @@
 
 bool dtst_init(Server* server, Entity* entity)
 {
-	DTStalactits* titi = (DTStalactits*)entity;
+	DTStalactits* titi = (DTStalactits*) entity;
 
 	Packet pack;
 	PacketCreate(&pack, SERVER_DTASS_STATE);
 	PacketWrite(&pack, packet_write8, 0);
 	PacketWrite(&pack, packet_write8, titi->sid);
-	PacketWrite(&pack, packet_write16, (uint16_t)titi->pos.x);
-	PacketWrite(&pack, packet_write16, (uint16_t)titi->pos.y);
+	PacketWrite(&pack, packet_write16, (uint16_t) titi->pos.x);
+	PacketWrite(&pack, packet_write16, (uint16_t) titi->pos.y);
 	server_broadcast(server, &pack, true);
 
 	return true;
@@ -18,17 +18,17 @@ bool dtst_init(Server* server, Entity* entity)
 
 bool dtst_tick(Server* server, Entity* entity)
 {
-	DTStalactits* titi = (DTStalactits*)entity;
+	DTStalactits* titi = (DTStalactits*) entity;
 	if (titi->state)
 	{
-		titi->vel += 0.164f * (float)server->delta;
-		titi->pos.y += titi->vel * (float)server->delta;
+		titi->vel += 0.164f * (float) server->delta;
+		titi->pos.y += titi->vel * (float) server->delta;
 
 		Packet pack;
 		PacketCreate(&pack, SERVER_DTASS_STATE);
 		PacketWrite(&pack, packet_write8, titi->sid);
-		PacketWrite(&pack, packet_write16, (uint16_t)titi->pos.x);
-		PacketWrite(&pack, packet_write16, (uint16_t)titi->pos.y);
+		PacketWrite(&pack, packet_write16, (uint16_t) titi->pos.x);
+		PacketWrite(&pack, packet_write16, (uint16_t) titi->pos.y);
 		server_broadcast(server, &pack, false);
 	}
 	else
@@ -44,8 +44,8 @@ bool dtst_tick(Server* server, Entity* entity)
 				PacketCreate(&pack, SERVER_DTASS_STATE);
 				PacketWrite(&pack, packet_write8, 0);
 				PacketWrite(&pack, packet_write8, titi->sid);
-				PacketWrite(&pack, packet_write16, (uint16_t)titi->pos.x);
-				PacketWrite(&pack, packet_write16, (uint16_t)titi->pos.y);
+				PacketWrite(&pack, packet_write16, (uint16_t) titi->pos.x);
+				PacketWrite(&pack, packet_write16, (uint16_t) titi->pos.y);
 				server_broadcast(server, &pack, true);
 
 				titi->show = true;
@@ -61,11 +61,11 @@ bool dtst_tick(Server* server, Entity* entity)
 		{
 			for (size_t i = 0; i < server->peers.capacity; i++)
 			{
-				PeerData* data = (PeerData*)server->peers.ptr[i];
+				PeerData* data = (PeerData*) server->peers.ptr[i];
 				if (!data)
 					continue;
 
-				if(!data->in_game)
+				if (!data->in_game)
 					continue;
 
 				if (data->plr.flags & PLAYER_DEAD)
@@ -94,12 +94,12 @@ bool dtst_tick(Server* server, Entity* entity)
 
 bool dtst_activate(Server* server, DTStalactits* tits)
 {
-	if(!tits->state)
+	if (!tits->state)
 		return true;
-		
+
 	tits->show = false;
 	tits->state = false;
-	tits->timer = (25.0 + rand() % 5 ) * TICKSPERSEC;
+	tits->timer = (25.0 + rand() % 5) * TICKSPERSEC;
 	tits->pos.y = tits->sy;
 	tits->vel = 0;
 

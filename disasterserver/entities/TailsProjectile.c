@@ -1,14 +1,14 @@
 #include <entities/TailsProjectile.h>
 
 bool tproj_init(Server* server, Entity* entity)
-{	
-	TProjectile* tproj = (TProjectile*)entity;
+{
+	TProjectile* tproj = (TProjectile*) entity;
 
 	Packet pack;
 	PacketCreate(&pack, SERVER_TPROJECTILE_STATE);
 	PacketWrite(&pack, packet_write8, 0);
-	PacketWrite(&pack, packet_write16, (uint16_t)tproj->pos.x);
-	PacketWrite(&pack, packet_write16, (uint16_t)tproj->pos.y);
+	PacketWrite(&pack, packet_write16, (uint16_t) tproj->pos.x);
+	PacketWrite(&pack, packet_write16, (uint16_t) tproj->pos.y);
 	PacketWrite(&pack, packet_write16, tproj->owner);
 	PacketWrite(&pack, packet_write8, tproj->dir);
 	PacketWrite(&pack, packet_write8, tproj->damage);
@@ -21,7 +21,7 @@ bool tproj_init(Server* server, Entity* entity)
 
 bool tproj_tick(Server* server, Entity* entity)
 {
-	TProjectile* tproj = (TProjectile*)entity;
+	TProjectile* tproj = (TProjectile*) entity;
 
 	if (tproj->timer <= 0)
 		return false;
@@ -42,11 +42,11 @@ bool tproj_tick(Server* server, Entity* entity)
 	Packet pack;
 	PacketCreate(&pack, SERVER_TPROJECTILE_STATE);
 	PacketWrite(&pack, packet_write8, 1);
-	PacketWrite(&pack, packet_write16, (uint16_t)tproj->pos.x);
-	PacketWrite(&pack, packet_write16, (uint16_t)tproj->pos.y);
+	PacketWrite(&pack, packet_write16, (uint16_t) tproj->pos.x);
+	PacketWrite(&pack, packet_write16, (uint16_t) tproj->pos.y);
 	server_broadcast(server, &pack, false);
 
-	tproj->pos.x += (float)(tproj->dir * 14 * server->delta);
+	tproj->pos.x += (float) (tproj->dir * 14 * server->delta);
 	tproj->timer -= server->delta;
 
 	return true;
@@ -54,8 +54,8 @@ bool tproj_tick(Server* server, Entity* entity)
 
 bool tproj_uninit(Server* server, Entity* entity)
 {
-	(void)entity;
-	
+	(void) entity;
+
 	Packet pack;
 	PacketCreate(&pack, SERVER_TPROJECTILE_STATE);
 	PacketWrite(&pack, packet_write8, 2);

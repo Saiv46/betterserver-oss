@@ -1,8 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
+#include <Server.h>
 #include <cJSON.h>
 #include <ui/Components.h>
-#include <Server.h>
 
 void ui_update_playerlist(Server* server);
 

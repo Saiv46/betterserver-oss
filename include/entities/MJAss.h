@@ -10,7 +10,7 @@ typedef struct
 
 	double next_time;
 	double timer;
-	bool state;
+	bool   state;
 } MAss;
 #define MakeMAss() ((MAss) { MakeEntity("mass", 0, 0) NULL, mass_tick, NULL, 10 * TICKSPERSEC, 0.0, false })
 #endif

@@ -9,9 +9,9 @@ typedef struct
 	size_t capacity;
 } DyList;
 
-bool		dylist_create(DyList* list, size_t max_capacity);
-bool		dylist_push(DyList* list, void* item);
-bool		dylist_remove(DyList* list, void* item);
-void		dylist_free(DyList* list);
+bool dylist_create(DyList* list, size_t max_capacity);
+bool dylist_push(DyList* list, void* item);
+bool dylist_remove(DyList* list, void* item);
+void dylist_free(DyList* list);
 
 #endif

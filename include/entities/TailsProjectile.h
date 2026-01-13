@@ -12,11 +12,11 @@ typedef struct
 
 	uint16_t owner;
 	int8_t	 dir;
-	uint8_t  exe;
+	uint8_t	 exe;
 	uint8_t	 charge;
-	uint8_t  damage;
+	uint8_t	 damage;
 
-	double	 timer;
+	double timer;
 } TProjectile;
 #define MakeTailsProj(x, y, owner, dir, exe, charge, damage) ((TProjectile) { MakeEntity("tproj", x, y) tproj_init, tproj_tick, tproj_uninit, owner, dir, exe, charge, damage, 5 * TICKSPERSEC })
 

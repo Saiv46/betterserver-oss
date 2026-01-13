@@ -3,7 +3,7 @@
 
 bool dtball_tick(Server* server, Entity* entity)
 {
-	DTBall* ball = (DTBall*)entity;
+	DTBall* ball = (DTBall*) entity;
 
 	if (ball->side)
 	{
@@ -22,7 +22,7 @@ bool dtball_tick(Server* server, Entity* entity)
 
 	Packet pack;
 	PacketCreate(&pack, SERVER_DTBALL_STATE);
-	PacketWrite(&pack, packet_writefloat, (float)ball->state);
+	PacketWrite(&pack, packet_writefloat, (float) ball->state);
 	server_broadcast(server, &pack, false);
 
 	return true;

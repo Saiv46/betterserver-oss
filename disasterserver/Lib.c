@@ -1,16 +1,16 @@
-#include <enet/enet.h>
-#include <io/Dir.h>
-#include <io/Threads.h>
+#include <Config.h>
+#include <DyList.h>
 #include <Lib.h>
 #include <Log.h>
 #include <Server.h>
 #include <States.h>
-#include <DyList.h>
-#include <Config.h>
+#include <enet/enet.h>
+#include <io/Dir.h>
+#include <io/Threads.h>
 
-ThreadVar		g_threadName;
-DyList			servers;
-bool 			running = 0;
+ThreadVar g_threadName;
+DyList	  servers;
+bool	  running = 0;
 
 bool allocate_server(uint16_t base_port, uint16_t n)
 {
@@ -21,14 +21,14 @@ bool allocate_server(uint16_t base_port, uint16_t n)
 		.running = true,
 		.delta = 1,
 		.game = {
-			.exe = -1
+			.exe = -1,
 		},
 		.lobby = {
 			.vote = {
 				.ongoing = 0,
 			},
-			.prac_countdown = 0
-		}
+			.prac_countdown = 0,
+		},
 	};
 
 	Server* server = malloc(sizeof(Server));
@@ -41,7 +41,7 @@ bool allocate_server(uint16_t base_port, uint16_t n)
 	// Init lobby
 	MutexCreate(server->state_lock);
 	RAssert(dylist_create(&server->peers, 7));
-	
+
 	ENetAddress addr;
 	addr.host = ENET_HOST_ANY;
 	addr.port = base_port + n;
@@ -82,8 +82,8 @@ bool disaster_init(void)
 
 	RAssert(dylist_create(&servers, g_config.server_count));
 	for (int32_t i = 0; i < g_config.server_count; i++)
-		RAssert(allocate_server((uint16_t)g_config.port, i));
-	
+		RAssert(allocate_server((uint16_t) g_config.port, i));
+
 	return true;
 }
 
@@ -95,10 +95,10 @@ int disaster_run(void)
 	running = true;
 	Debug("Entering main loop...");
 
-	for(int32_t i = 0; i < g_config.server_count; i++)
+	for (int32_t i = 0; i < g_config.server_count; i++)
 	{
 		Server* server = servers.ptr[i];
-		if(!server)
+		if (!server)
 			continue;
 
 		Thread th;
@@ -110,13 +110,13 @@ int disaster_run(void)
 	{
 		ThreadSleep(100);
 	}
-	
+
 	return 0;
 }
 
 void disaster_shutdown(void)
 {
-	if(!running)
+	if (!running)
 		return;
 
 	running = false;
@@ -125,15 +125,15 @@ void disaster_shutdown(void)
 
 Server* disaster_get(int i)
 {
-	if (i < 0 || (size_t)i >= servers.capacity)
+	if (i < 0 || (size_t) i >= servers.capacity)
 		return NULL;
 
-	return (Server*)servers.ptr[i];
+	return (Server*) servers.ptr[i];
 }
 
 int disaster_count(void)
 {
-	return (int)servers.capacity;
+	return (int) servers.capacity;
 }
 
 bool disaster_server_lock(Server* server)
@@ -153,14 +153,14 @@ bool disaster_server_unlock(Server* server)
 uint8_t disaster_server_state(Server* server)
 {
 	RAssert(server);
-	return (uint8_t)server->state;
+	return (uint8_t) server->state;
 }
 
 bool disaster_server_ban(Server* server, uint16_t id)
 {
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
 
@@ -178,7 +178,7 @@ bool disaster_server_op(Server* server, uint16_t id)
 {
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
 
@@ -198,14 +198,14 @@ bool disaster_server_timeout(Server* server, uint16_t id, double timeout)
 {
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
 
 		if (v->id == id)
 		{
 			server_disconnect(server, v->peer, DR_KICKEDBYHOST, NULL);
-			return timeout_set(v->nickname.value, v->udid.value, v->ip.value, time(NULL) + (uint64_t)(round(timeout)));
+			return timeout_set(v->nickname.value, v->udid.value, v->ip.value, time(NULL) + (uint64_t) (round(timeout)));
 		}
 	}
 
@@ -219,7 +219,7 @@ bool disaster_server_peer(Server* server, int index, PeerInfo* info)
 		return false;
 	else
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[index];
+		PeerData* v = (PeerData*) server->peers.ptr[index];
 		if (!v)
 			return false;
 		else
@@ -243,7 +243,7 @@ bool disaster_server_peer(Server* server, int index, PeerInfo* info)
 
 bool disaster_server_peer_disconnect(Server* server, uint16_t id, DisconnectReason reason, const char* text)
 {
-	return server_disconnect_id(server, (int)id, reason, text);
+	return server_disconnect_id(server, (int) id, reason, text);
 }
 
 int disaster_server_peer_count(Server* server)

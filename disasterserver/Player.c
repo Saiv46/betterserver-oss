@@ -27,7 +27,7 @@ void player_check_zone(Server* server, PeerData* v)
 	if (v->plr.pos.x == 0 && v->plr.pos.y == 0)
 		return;
 
-	const Zone* zones = g_mapZone[server->game.map];
+	const Zone*	 zones = g_mapZone[server->game.map];
 	const size_t zonesSize = g_mapZoneSize[server->game.map];
 	for (size_t i = 0; i < zonesSize; i++)
 	{

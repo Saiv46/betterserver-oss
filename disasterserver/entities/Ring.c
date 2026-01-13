@@ -1,10 +1,10 @@
+#include <CMath.h>
 #include <entities/Ring.h>
 #include <stdint.h>
-#include <CMath.h>
 
 bool ring_init(Server* server, Entity* entity)
 {
-	Ring* ring = (Ring*)entity;
+	Ring* ring = (Ring*) entity;
 
 	int cnt = 0;
 	for (int i = 0; i < g_mapList[server->game.map].ring_count; i++)
@@ -24,7 +24,7 @@ gen:
 		goto gen;
 
 	server->game.rings[rnd] = true;
-	ring->rid = (uint8_t)rnd;
+	ring->rid = (uint8_t) rnd;
 	ring->red = g_mapList[server->game.map].spawn_red_rings && (rand() % 100 <= 10);
 
 	Packet pack;
@@ -40,7 +40,7 @@ gen:
 
 bool ring_uninit(Server* server, Entity* entity)
 {
-	Ring* ring = (Ring*)entity;
+	Ring* ring = (Ring*) entity;
 	server->game.rings[ring->rid] = 0;
 
 	Packet pack;

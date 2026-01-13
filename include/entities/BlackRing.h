@@ -10,7 +10,7 @@ typedef struct
 {
 	ENTITY_BODY
 } BRing;
-#define MakeBlackRing(x, y) ((BRing) { MakeEntity("bring", x, y) bring_init, NULL, bring_uninit})
+#define MakeBlackRing(x, y) ((BRing) { MakeEntity("bring", x, y) bring_init, NULL, bring_uninit })
 #define MAP_BRING INT16_MAX
 
 #endif

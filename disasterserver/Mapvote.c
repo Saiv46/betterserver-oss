@@ -1,8 +1,8 @@
 #include "Server.h"
-#include <States.h>
-#include <Maps.h>
 #include <CMath.h>
 #include <Colors.h>
+#include <Maps.h>
+#include <States.h>
 #include <time.h>
 
 bool mapvote_check_state(Server* server)
@@ -12,7 +12,7 @@ bool mapvote_check_state(Server* server)
 	uint8_t count = 0;
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* peer = (PeerData*)server->peers.ptr[i];
+		PeerData* peer = (PeerData*) server->peers.ptr[i];
 		if (!peer)
 			continue;
 
@@ -39,13 +39,13 @@ bool mapvote_state_handle(PeerData* v, Packet* packet)
 	PacketRead(type, packet, packet_read8, uint8_t);
 
 	Packet pack;
-	bool res = true;
+	bool   res = true;
 
 	switch (type)
-	{			
+	{
 		case CLIENT_VOTE_REQUEST:
 		{
-			if(!v->in_game)
+			if (!v->in_game)
 				break;
 
 			PacketRead(map, packet, packet_read8, uint8_t);
@@ -95,12 +95,12 @@ bool mapvote_state_tick(Server* server)
 	if (server->lobby.countdown <= 0)
 	{
 		server->lobby.countdown += TICKSPERSEC;
-	
+
 		if (--server->lobby.countdown_sec == 0)
 		{
-			//choose the map
+			// choose the map
 			int8_t indeces[3] = { -1, -1, -1 };
-			int count = 0;
+			int	   count = 0;
 
 			int largest = 0;
 			for (int i = 0; i < 3; i++)
@@ -122,7 +122,7 @@ bool mapvote_state_tick(Server* server)
 			// Find winner
 			int8_t won = indeces[rand() % count];
 			server->last_map = won;
-			
+
 			// Decrease pickrate
 			if ((server->map_pickrates[won] -= 255) < 0)
 				server->map_pickrates[won] = 0;
@@ -159,7 +159,7 @@ bool mapvote_state_tick(Server* server)
 	}
 
 	server->lobby.countdown -= server->delta;
-	
+
 	return res;
 }
 
@@ -171,7 +171,7 @@ bool mapvote_init(Server* server)
 	// randomize
 	time_t seed = time(NULL);
 	Debug("Mapvote seed: %d", seed);
-	srand((unsigned int)seed);
+	srand((unsigned int) seed);
 
 	RAssert(server);
 	server->state = ST_MAPVOTE;
@@ -196,7 +196,7 @@ bool mapvote_init(Server* server)
 		{
 			for (int8_t i = 0; i < allowed_count; i++)
 			{
-				for(int j = i; j < 3; j++)
+				for (int j = i; j < 3; j++)
 					server->lobby.maps[j] = allowed[i];
 			}
 			goto skip_rand;
@@ -226,7 +226,6 @@ bool mapvote_init(Server* server)
 
 			server->lobby.maps[i] = map;
 		}
-
 	}
 skip_rand:
 	MutexUnlock(g_config.map_list_lock);
@@ -253,7 +252,7 @@ bool mapvote_state_join(PeerData* v)
 
 bool mapvote_state_left(PeerData* v)
 {
-	if(server_ingame(v->server) <= 1)
+	if (server_ingame(v->server) <= 1)
 		return lobby_init(v->server);
 
 	RAssert(mapvote_check_state(v->server));

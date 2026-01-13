@@ -6,7 +6,7 @@
 typedef struct
 {
 	const char* name;
-	const bool values[MAP_COUNT];
+	const bool	values[MAP_COUNT];
 } Preset;
 
 extern Preset g_defaultPresets[];

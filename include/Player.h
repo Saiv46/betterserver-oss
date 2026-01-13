@@ -1,8 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include <io/Time.h>
-#include <Packet.h>
 #include <CMath.h>
+#include <Packet.h>
+#include <io/Time.h>
 #include <stdint.h>
 
 typedef enum
@@ -19,56 +19,56 @@ typedef enum
 
 typedef struct
 {
-	uint8_t		ready;
-	uint16_t	seq;
-	uint16_t	errors; /* Used as tracker for errors like lag/etc */
-	uint8_t		ex_teleport;
-	double		timeout;
+	uint8_t	 ready;
+	uint16_t seq;
+	uint16_t errors; /* Used as tracker for errors like lag/etc */
+	uint8_t	 ex_teleport;
+	double	 timeout;
 
-	uint8_t 	mod_tool;
-	uint32_t 	mod_tool_timer;
-	uint32_t	chunk;
-	TimeStamp	last_packet;
+	uint8_t	  mod_tool;
+	uint32_t  mod_tool_timer;
+	uint32_t  chunk;
+	TimeStamp last_packet;
 
 	/* Attack */
-	bool		is_attacking;
-	double 		attack_timer;
-	TimeStamp	last_attack;
+	bool	  is_attacking;
+	double	  attack_timer;
+	TimeStamp last_attack;
 
-	uint16_t	ping_last;
-	double		ping_total;
-	double		ping_timer;
-	uint16_t	rings;
-	TimeStamp	last_rings;
-	uint16_t	heal_rings;
+	uint16_t  ping_last;
+	double	  ping_total;
+	double	  ping_timer;
+	uint16_t  rings;
+	TimeStamp last_rings;
+	uint16_t  heal_rings;
 
 	uint8_t		state;
-	PlayerFlags	flags;
+	PlayerFlags flags;
 	uint8_t		death_timer_sec;
 	double		death_timer;
 	double		revival;
 	int32_t		revival_init[5];
 
-	uintptr_t	data[4]; /* Can be used as pointer/data field */
-	Vector2		start_pos;
-	Vector2		pos;
+	uintptr_t data[4]; /* Can be used as pointer/data field */
+	Vector2	  start_pos;
+	Vector2	  pos;
 
 	struct
 	{
-		double		survive_time;
-		double		danger_time;
-		double		camp_time;
+		double survive_time;
+		double danger_time;
+		double camp_time;
 
-		double		braindead_time;
-		bool		brain_damage;
+		double braindead_time;
+		bool   brain_damage;
 
-		uint16_t	stun_time;
-		uint16_t	stuns;
-		uint16_t	hp_restored;
-		uint16_t	rings;
-		uint16_t	damage;
-		uint16_t	damage_taken;
-		uint16_t	kills;
+		uint16_t stun_time;
+		uint16_t stuns;
+		uint16_t hp_restored;
+		uint16_t rings;
+		uint16_t damage;
+		uint16_t damage_taken;
+		uint16_t kills;
 	} stats;
 } Player;
 
@@ -77,7 +77,7 @@ typedef struct
 
 struct Server;
 struct PeerData;
-bool player_add_error (struct Server* server, struct PeerData* v, uint16_t by);
+bool player_add_error(struct Server* server, struct PeerData* v, uint16_t by);
 void player_check_zone(struct Server* server, struct PeerData* v);
 
 #endif

@@ -1,9 +1,9 @@
-#include <entities/YouCantRun.h>
 #include <CMath.h>
+#include <entities/YouCantRun.h>
 
 bool ycrctrl_tick(Server* server, Entity* entity)
 {
-	YCRController* ctrl = (YCRController*)entity;
+	YCRController* ctrl = (YCRController*) entity;
 
 	switch (ctrl->state)
 	{

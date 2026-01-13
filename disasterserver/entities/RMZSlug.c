@@ -1,5 +1,5 @@
-#include <entities/RMZSlug.h>
 #include <CMath.h>
+#include <entities/RMZSlug.h>
 
 void slug_face(Slug* slug, uint8_t side)
 {
@@ -24,24 +24,24 @@ void slug_face(Slug* slug, uint8_t side)
 	{
 		switch (slug->ring)
 		{
-		case SLUG_NORING:
-			slug->state = SLUG_NONELEFT;
-			break;
+			case SLUG_NORING:
+				slug->state = SLUG_NONELEFT;
+				break;
 
-		case SLUG_RING:
-			slug->state = SLUG_RINGLEFT;
-			break;
+			case SLUG_RING:
+				slug->state = SLUG_RINGLEFT;
+				break;
 
-		case SLUG_REDRING:
-			slug->state = SLUG_REDRINGLEFT;
-			break;
+			case SLUG_REDRING:
+				slug->state = SLUG_REDRINGLEFT;
+				break;
 		}
 	}
 }
 
 bool slug_init(Server* server, Entity* entity)
 {
-	Slug* slug = (Slug*)entity;
+	Slug* slug = (Slug*) entity;
 
 	int num = rand() % 100;
 	if (num < 50)
@@ -59,11 +59,11 @@ bool slug_init(Server* server, Entity* entity)
 
 	Packet pack;
 	PacketCreate(&pack, SERVER_RMZSLIME_STATE);
-	PacketWrite(&pack, packet_write8,	0);
-	PacketWrite(&pack, packet_write16,	slug->id);
-	PacketWrite(&pack, packet_write16,	(uint16_t)slug->pos.x);
-	PacketWrite(&pack, packet_write16,	(uint16_t)slug->pos.y);
-	PacketWrite(&pack, packet_write8,	(uint8_t)slug->state);
+	PacketWrite(&pack, packet_write8, 0);
+	PacketWrite(&pack, packet_write16, slug->id);
+	PacketWrite(&pack, packet_write16, (uint16_t) slug->pos.x);
+	PacketWrite(&pack, packet_write16, (uint16_t) slug->pos.y);
+	PacketWrite(&pack, packet_write8, (uint8_t) slug->state);
 	server_broadcast(server, &pack, true);
 
 	return true;
@@ -71,14 +71,14 @@ bool slug_init(Server* server, Entity* entity)
 
 bool slug_tick(Server* server, Entity* entity)
 {
-	Slug* slug = (Slug*)entity;
+	Slug* slug = (Slug*) entity;
 
 	switch (slug->state)
 	{
 		case SLUG_NONELEFT:
 		case SLUG_RINGLEFT:
 		case SLUG_REDRINGLEFT:
-			slug->pos.x -= (float)server->delta;
+			slug->pos.x -= (float) server->delta;
 			if (slug->pos.x <= slug->sX - 100)
 				slug_face(slug, 1);
 			break;
@@ -86,7 +86,7 @@ bool slug_tick(Server* server, Entity* entity)
 		case SLUG_NONERIGHT:
 		case SLUG_RINGRIGHT:
 		case SLUG_REDRINGRIGHT:
-			slug->pos.x += (float)server->delta;
+			slug->pos.x += (float) server->delta;
 			if (slug->pos.x >= slug->sX + 100)
 				slug_face(slug, 0);
 			break;
@@ -96,9 +96,9 @@ bool slug_tick(Server* server, Entity* entity)
 	PacketCreate(&pack, SERVER_RMZSLIME_STATE);
 	PacketWrite(&pack, packet_write8, 1);
 	PacketWrite(&pack, packet_write16, slug->id);
-	PacketWrite(&pack, packet_write16, (uint16_t)slug->pos.x);
-	PacketWrite(&pack, packet_write16, (uint16_t)slug->pos.y);
-	PacketWrite(&pack, packet_write8, (uint8_t)slug->state);
+	PacketWrite(&pack, packet_write16, (uint16_t) slug->pos.x);
+	PacketWrite(&pack, packet_write16, (uint16_t) slug->pos.y);
+	PacketWrite(&pack, packet_write8, (uint8_t) slug->state);
 	server_broadcast(server, &pack, false);
 
 	return true;
@@ -115,7 +115,7 @@ bool slug_uninit(Server* server, Entity* entity)
 	// find slug spawner and free it
 	SlugSpawner* spawners[11];
 
-	int found = game_find(server, (Entity**)spawners, "slugspawn", 11);
+	int found = game_find(server, (Entity**) spawners, "slugspawn", 11);
 	for (int i = 0; i < found; i++)
 	{
 		if (spawners[i]->slug == entity->id)
@@ -131,7 +131,7 @@ bool slug_uninit(Server* server, Entity* entity)
 
 bool slugspawn_tick(Server* server, Entity* entity)
 {
-	SlugSpawner* spawn = (SlugSpawner*)entity;
+	SlugSpawner* spawn = (SlugSpawner*) entity;
 	if (spawn->slug > 0)
 		return true;
 
@@ -145,11 +145,11 @@ bool slugspawn_tick(Server* server, Entity* entity)
 	if (spawn->timer >= 15 * TICKSPERSEC)
 	{
 		Slug* slug;
-		RAssert(game_spawn(server, (Entity*)&(MakeSlug(spawn->pos.x, spawn->pos.y)), sizeof(Slug), (Entity**)&slug));
-		
+		RAssert(game_spawn(server, (Entity*) &(MakeSlug(spawn->pos.x, spawn->pos.y)), sizeof(Slug), (Entity**) &slug));
+
 		spawn->timer = 0;
 		spawn->slug = slug->id;
-		spawn->offset = (double)((rand() % 2) * TICKSPERSEC);
+		spawn->offset = (double) ((rand() % 2) * TICKSPERSEC);
 	}
 
 	return true;

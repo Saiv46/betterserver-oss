@@ -2,7 +2,7 @@
 
 bool kafbox_init(Server* server, Entity* entity)
 {
-	KafBox* box = (KafBox*)entity;
+	KafBox* box = (KafBox*) entity;
 
 	Packet pack;
 	PacketCreate(&pack, SERVER_KAFMONITOR_STATE);
@@ -15,7 +15,7 @@ bool kafbox_init(Server* server, Entity* entity)
 
 bool kafbox_tick(Server* server, Entity* entity)
 {
-	KafBox* box = (KafBox*)entity;
+	KafBox* box = (KafBox*) entity;
 
 	if (!box->activated)
 		return true;

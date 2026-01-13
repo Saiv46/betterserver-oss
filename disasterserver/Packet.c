@@ -1,23 +1,23 @@
-#include <enet/enet.h>
-#include <ctype.h>
-#include <Packet.h>
 #include <CMath.h>
+#include <Packet.h>
 #include <Server.h>
+#include <ctype.h>
+#include <enet/enet.h>
 
 #ifdef __GNUC__ // GCC, clang...
-	#define BYTESWAP_16(x) __builtin_bswap16((x))
-	#define BYTESWAP_32(x) __builtin_bswap32((x))
-	#define BYTESWAP_64(x) __builtin_bswap64((x))
+#define BYTESWAP_16(x) __builtin_bswap16((x))
+#define BYTESWAP_32(x) __builtin_bswap32((x))
+#define BYTESWAP_64(x) __builtin_bswap64((x))
 #else
-	#define BYTESWAP_16(x) _byteswap_ushort((x))
-	#define BYTESWAP_32(x) _byteswap_ulong((x))
-	#define BYTESWAP_64(x) _byteswap_uint64((x))
+#define BYTESWAP_16(x) _byteswap_ushort((x))
+#define BYTESWAP_32(x) _byteswap_ulong((x))
+#define BYTESWAP_64(x) _byteswap_uint64((x))
 #endif
 
 String string_new(const char* value)
 {
 	size_t len = strlen(value) + 1;
-	String str = { .value = {0},  .len = (uint16_t)len};
+	String str = { .value = { 0 }, .len = (uint16_t) len };
 	memcpy(str.value, value, len);
 
 	return str;
@@ -41,7 +41,7 @@ size_t string_length(String* str)
 String string_lower(String str)
 {
 	for (int i = 0; i < str.len; i++)
-		str.value[i] = (char)tolower(str.value[i]);
+		str.value[i] = (char) tolower(str.value[i]);
 
 	return str;
 }
@@ -53,23 +53,23 @@ bool packet_new(Packet* packet, PacketType type)
 	packet->pos = 0;
 
 	PacketWrite(packet, packet_write8, 0);
-	PacketWrite(packet, packet_write8, (uint8_t)type);
+	PacketWrite(packet, packet_write8, (uint8_t) type);
 
 	return true;
 }
 
 Packet packet_from(ENetPacket* packet)
 {
-	Packet pack = (Packet) { .pos = 0,  .len = (uint8_t)packet->dataLength };
-	memcpy(pack.buff, packet->data, (uint8_t)packet->dataLength);
+	Packet pack = (Packet) { .pos = 0, .len = (uint8_t) packet->dataLength };
+	memcpy(pack.buff, packet->data, (uint8_t) packet->dataLength);
 	enet_packet_destroy(packet);
 	return pack;
 }
 
 bool packet_send(ENetPeer* peer, Packet* packet, bool reliable)
 {
-	PeerData* data = (PeerData*)peer->data;
-	if(data && data->disconnecting)
+	PeerData* data = (PeerData*) peer->data;
+	if (data && data->disconnecting)
 		return true;
 
 	packet->pos = 0;
@@ -82,15 +82,15 @@ bool packet_send_id(struct Server* server, uint16_t id, Packet* packet, bool rel
 	packet->pos = 0;
 	ENetPacket* pack = enet_packet_create(packet, packet->len, reliable ? ENET_PACKET_FLAG_RELIABLE : 0);
 
-	for(int32_t i = 0; i < server->peers.capacity; i++)
+	for (int32_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* data = (PeerData*)server->peers.ptr[i];
-		if(!data)
+		PeerData* data = (PeerData*) server->peers.ptr[i];
+		if (!data)
 			continue;
 
-		if(data->id != id)
+		if (data->id != id)
 			continue;
-			
+
 		return enet_peer_send(data->peer, reliable ? 0 : 1, pack) == 0;
 	}
 
@@ -118,7 +118,7 @@ bool packet_read8(Packet* packet, uint8_t* out)
 bool packet_read16(Packet* packet, uint16_t* out)
 {
 	RAssert(packet->pos < packet->len);
-	*out = *((int16_t*)&packet->buff[packet->pos]);
+	*out = *((int16_t*) &packet->buff[packet->pos]);
 
 #ifdef SYS_BIG_ENDIAN
 	*out = BYTESWAP_16(*out);
@@ -132,7 +132,7 @@ bool packet_read16(Packet* packet, uint16_t* out)
 bool packet_read32(Packet* packet, uint32_t* out)
 {
 	RAssert(packet->pos < packet->len);
-	*out = *((int32_t*)&packet->buff[packet->pos]);
+	*out = *((int32_t*) &packet->buff[packet->pos]);
 
 #ifdef SYS_BIG_ENDIAN
 	*out = BYTESWAP_32(*out);
@@ -146,7 +146,7 @@ bool packet_read32(Packet* packet, uint32_t* out)
 bool packet_read64(Packet* packet, uint64_t* out)
 {
 	RAssert(packet->pos < packet->len);
-	*out = *((int64_t*)&packet->buff[packet->pos]);
+	*out = *((int64_t*) &packet->buff[packet->pos]);
 
 #ifdef SYS_BIG_ENDIAN
 	*out = BYTESWAP_64(*out);
@@ -160,7 +160,7 @@ bool packet_read64(Packet* packet, uint64_t* out)
 bool packet_readfloat(Packet* packet, float* out)
 {
 	RAssert(packet->pos < packet->len);
-	*out = *((float*)&packet->buff[packet->pos]);
+	*out = *((float*) &packet->buff[packet->pos]);
 
 #ifdef SYS_BIG_ENDIAN
 	*out = BYTESWAP_32(*out);
@@ -174,10 +174,10 @@ bool packet_readfloat(Packet* packet, float* out)
 bool packet_readdouble(Packet* packet, double* out)
 {
 	RAssert(packet->pos < packet->len);
-	*out = *((float*)&packet->buff[packet->pos]);
+	*out = *((float*) &packet->buff[packet->pos]);
 
 #ifdef SYS_BIG_ENDIAN
-	* out = BYTESWAP_32(*out);
+	*out = BYTESWAP_32(*out);
 #endif
 
 	packet->pos += 8;
@@ -229,7 +229,7 @@ bool packet_write16(Packet* packet, uint16_t value)
 	value = BYTESWAP_16(value);
 #endif
 
-	uint8_t* ptr = (uint8_t*)&value;
+	uint8_t* ptr = (uint8_t*) &value;
 	packet->buff[packet->pos++] = ptr[0];
 	packet->buff[packet->pos++] = ptr[1];
 	return true;
@@ -246,7 +246,7 @@ bool packet_write32(Packet* packet, uint32_t value)
 	value = BYTESWAP_32(value);
 #endif
 
-	uint8_t* ptr = (uint8_t*)&value;
+	uint8_t* ptr = (uint8_t*) &value;
 	packet->buff[packet->pos++] = ptr[0];
 	packet->buff[packet->pos++] = ptr[1];
 	packet->buff[packet->pos++] = ptr[2];
@@ -265,7 +265,7 @@ bool packet_write64(Packet* packet, uint64_t value)
 	value = BYTESWAP_64(value);
 #endif
 
-	uint8_t* ptr = (uint8_t*)&value;
+	uint8_t* ptr = (uint8_t*) &value;
 	packet->buff[packet->pos++] = ptr[0];
 	packet->buff[packet->pos++] = ptr[1];
 	packet->buff[packet->pos++] = ptr[2];
@@ -288,7 +288,7 @@ bool packet_writefloat(Packet* packet, float value)
 	value = BYTESWAP_32(value);
 #endif
 
-	uint8_t* ptr = (uint8_t*)&value;
+	uint8_t* ptr = (uint8_t*) &value;
 	packet->buff[packet->pos++] = ptr[0];
 	packet->buff[packet->pos++] = ptr[1];
 	packet->buff[packet->pos++] = ptr[2];
@@ -307,7 +307,7 @@ bool packet_writedouble(Packet* packet, double value)
 	value = BYTESWAP_64(value);
 #endif
 
-	uint8_t* ptr = (uint8_t*)&value;
+	uint8_t* ptr = (uint8_t*) &value;
 	packet->buff[packet->pos++] = ptr[0];
 	packet->buff[packet->pos++] = ptr[1];
 	packet->buff[packet->pos++] = ptr[2];

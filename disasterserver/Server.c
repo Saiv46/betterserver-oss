@@ -1,26 +1,26 @@
 #include "Lib.h"
-#include <enet/enet.h>
-#include <Server.h>
-#include <Config.h>
-#include <Colors.h>
 #include <CMath.h>
+#include <Colors.h>
+#include <Config.h>
 #include <Log.h>
-#include <States.h>
 #include <Packet.h>
+#include <Server.h>
+#include <States.h>
+#include <cJSON.h>
 #include <ctype.h>
+#include <enet/enet.h>
 #include <io/Threads.h>
 #include <io/Time.h>
 #include <stdio.h>
-#include <time.h>
 #include <string.h>
-#include <cJSON.h>
+#include <time.h>
 
 #ifdef SYS_USE_SDL2
 #include <ui/Main.h>
 #endif
 
 cJSON* ip_addr_list = NULL;
-Mutex ip_addr_mut;
+Mutex  ip_addr_mut;
 
 bool peer_identity_process(PeerData* v, const char* addr, bool is_banned, uint64_t timeout, bool do_timeout)
 {
@@ -90,7 +90,7 @@ bool peer_identity_process(PeerData* v, const char* addr, bool is_banned, uint64
 		// For icons
 		for (size_t i = 0; i < v->server->peers.capacity; i++)
 		{
-			PeerData* peer = (PeerData*)v->server->peers.ptr[i];
+			PeerData* peer = (PeerData*) v->server->peers.ptr[i];
 			if (!peer)
 				continue;
 
@@ -128,7 +128,7 @@ bool peer_identity_process(PeerData* v, const char* addr, bool is_banned, uint64
 
 		server_send_msg(v->server, v->peer, "-----------------------");
 		server_send_msg(v->server, v->peer, CLRCODE_RED "better/server~ v" STRINGIFY(BUILD_VERSION));
-		server_send_msg(v->server, v->peer, "build from " CLRCODE_PUR  __DATE__ " " CLRCODE_GRN  __TIME__ CLRCODE_RST);
+		server_send_msg(v->server, v->peer, "build from " CLRCODE_PUR __DATE__ " " CLRCODE_GRN __TIME__ CLRCODE_RST);
 		server_send_msg(v->server, v->peer, msg);
 		server_send_msg(v->server, v->peer, "-----------------------");
 		server_send_msg(v->server, v->peer, g_config.motd);
@@ -144,8 +144,8 @@ bool peer_identity_process(PeerData* v, const char* addr, bool is_banned, uint64
 	}
 
 	MutexLock(ip_addr_mut);
-		cJSON_AddItemToObject(ip_addr_list, addr, cJSON_CreateTrue());
-		cJSON_AddItemToObject(ip_addr_list, v->udid.value, cJSON_CreateTrue());
+	cJSON_AddItemToObject(ip_addr_list, addr, cJSON_CreateTrue());
+	cJSON_AddItemToObject(ip_addr_list, v->udid.value, cJSON_CreateTrue());
 	MutexUnlock(ip_addr_mut);
 	return true;
 }
@@ -153,10 +153,10 @@ bool peer_identity_process(PeerData* v, const char* addr, bool is_banned, uint64
 bool peer_identity(PeerData* v, Packet* packet)
 {
 	RAssert(v->id > 0);
-	srand((unsigned int)time(NULL));
+	srand((unsigned int) time(NULL));
 
-	bool		is_banned;
-	uint64_t	timeout;
+	bool	 is_banned;
+	uint64_t timeout;
 
 	// Read header
 	PacketRead(passtrough, packet, packet_read8, uint8_t);
@@ -194,15 +194,15 @@ bool peer_identity(PeerData* v, Packet* packet)
 		v->in_game = (v->server->state == ST_LOBBY);
 		v->exe_chance = 1 + rand() % 4;
 
-		if(v->server->peers.noitems >= 7)
+		if (v->server->peers.noitems >= 7)
 		{
-			for(int i = 0; i < disaster_count(); i++)
+			for (int i = 0; i < disaster_count(); i++)
 			{
 				Server* server = disaster_get(i);
-				if(!server)
+				if (!server)
 					continue;
 
-				if(server->peers.noitems >= 7)
+				if (server->peers.noitems >= 7)
 					continue;
 
 				Packet pack;
@@ -289,7 +289,7 @@ bool peer_msg(PeerData* v, Packet* packet)
 
 bool server_worker(Server* server)
 {
-	srand((unsigned int)time(NULL));
+	srand((unsigned int) time(NULL));
 
 	char thread_name[128];
 	snprintf(thread_name, 128, "Worker Thr %d", server->id);
@@ -305,30 +305,30 @@ bool server_worker(Server* server)
 	TimeStamp ticker;
 	time_start(&ticker);
 
-	double next_tick = time_end(&ticker);
-	double heartbeat = 0.0;
+	double		 next_tick = time_end(&ticker);
+	double		 heartbeat = 0.0;
 	const double TARGET_FPS = 1000.0 / 60;
 
 	Packet pack;
 	PacketCreate(&pack, SERVER_HEARTBEAT);
 
-	while(server->running)
+	while (server->running)
 	{
 		ENetEvent ev;
-		if(enet_host_service(server->host, &ev, 5) > 0)
+		if (enet_host_service(server->host, &ev, 5) > 0)
 		{
-			switch(ev.type)
+			switch (ev.type)
 			{
 				case ENET_EVENT_TYPE_CONNECT:
 				{
 					Debug("ENET_EVENT_TYPE_CONNECT...");
-					ev.peer->data = (PeerData*)malloc(sizeof(PeerData));
-					if(!ev.peer->data)
+					ev.peer->data = (PeerData*) malloc(sizeof(PeerData));
+					if (!ev.peer->data)
 						return false;
 
 					memset(ev.peer->data, 0, sizeof(PeerData));
 
-					PeerData* v = (PeerData*)ev.peer->data;
+					PeerData* v = (PeerData*) ev.peer->data;
 					v->server = server;
 					v->peer = ev.peer;
 					v->id = ev.peer->incomingPeerID + 1;
@@ -341,11 +341,12 @@ bool server_worker(Server* server)
 					// All values here are complete bogus btw
 					PacketWrite(&packet, packet_write16, 0);
 					PacketWrite(&packet, packet_write16, 1);
-					PacketWrite(&packet, packet_write8, v->auth.one = (uint8_t)rand());
-					PacketWrite(&packet, packet_write8, (uint8_t)rand() % 2);
-					PacketWrite(&packet, packet_write8, v->auth.two = (uint8_t)rand() % 31);
-					char balls[] = { 0xff, 0x1c, 0x22, 0x00, 0x14, 0x80 };
-					for (int i = 0; i < 3; i++) {
+					PacketWrite(&packet, packet_write8, v->auth.one = (uint8_t) rand());
+					PacketWrite(&packet, packet_write8, (uint8_t) rand() % 2);
+					PacketWrite(&packet, packet_write8, v->auth.two = (uint8_t) rand() % 31);
+					const char balls[] = { 0xff, 0x1c, 0x22, 0x00, 0x14, 0x80 };
+					for (int i = 0; i < 3; i++)
+					{
 						PacketWrite(&packet, packet_write8, balls[rand() % sizeof(balls)]);
 					}
 					PacketWrite(&packet, packet_write32, v->auth.type = rand() & ~((1 << 9) | (1 << 31) | (1 << 26)));
@@ -357,8 +358,8 @@ bool server_worker(Server* server)
 				case ENET_EVENT_TYPE_DISCONNECT:
 				{
 					Debug("ENET_EVENT_TYPE_DISCONNECT...");
-					PeerData* v = (PeerData*)ev.peer->data;
-					if(!v)
+					PeerData* v = (PeerData*) ev.peer->data;
+					if (!v)
 						break;
 
 					if (!v->op && v->should_timeout)
@@ -368,7 +369,7 @@ bool server_worker(Server* server)
 							timeout_set(v->nickname.value, v->udid.value, v->ip.value, time(NULL) + 5);
 					}
 
-					if(v->verified)
+					if (v->verified)
 					{
 						MutexLock(ip_addr_mut);
 						{
@@ -393,10 +394,10 @@ bool server_worker(Server* server)
 
 				case ENET_EVENT_TYPE_RECEIVE:
 				{
-					PeerData* v = (PeerData*)ev.peer->data;
-					Packet packet = packet_from(ev.packet);
+					PeerData* v = (PeerData*) ev.peer->data;
+					Packet	  packet = packet_from(ev.packet);
 
-					switch(packet.buff[1])
+					switch (packet.buff[1])
 					{
 						case IDENTITY:
 						{
@@ -426,19 +427,19 @@ bool server_worker(Server* server)
 			{
 				switch (server->state)
 				{
-				case ST_LOBBY:
-				case ST_CHARSELECT:
-				case ST_MAPVOTE:
-					lobby_state_tick(server);
-					break;
+					case ST_LOBBY:
+					case ST_CHARSELECT:
+					case ST_MAPVOTE:
+						lobby_state_tick(server);
+						break;
 
-				case ST_GAME:
-					game_state_tick(server);
-					break;
+					case ST_GAME:
+						game_state_tick(server);
+						break;
 
-				case ST_RESULTS:
-					results_state_tick(server);
-					break;
+					case ST_RESULTS:
+						results_state_tick(server);
+						break;
 				}
 
 				// Heartbeat
@@ -466,8 +467,8 @@ bool server_disconnect(Server* server, ENetPeer* peer, DisconnectReason reason, 
 {
 	if (server)
 	{
-		PeerData* data = (PeerData*)peer->data;
-		if(data->disconnecting)
+		PeerData* data = (PeerData*) peer->data;
+		if (data->disconnecting)
 			return true;
 
 		// FIXME: crashes v110 too lazy to fix
@@ -481,9 +482,9 @@ bool server_disconnect(Server* server, ENetPeer* peer, DisconnectReason reason, 
 		// 	enet_peer_disconnect_later(peer, reason);
 		// }
 		// else
-			enet_peer_disconnect(peer, reason);
+		enet_peer_disconnect(peer, reason);
 
-		if(!text)
+		if (!text)
 		{
 			Info("Disconnected id %d %d: No text.", data->id, reason);
 		}
@@ -526,7 +527,7 @@ int server_total(Server* server)
 	int count = 0;
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* peer = (PeerData*)server->peers.ptr[i];
+		PeerData* peer = (PeerData*) server->peers.ptr[i];
 		if (!peer)
 			continue;
 
@@ -541,7 +542,7 @@ int server_ingame(Server* server)
 	int count = 0;
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* peer = (PeerData*)server->peers.ptr[i];
+		PeerData* peer = (PeerData*) server->peers.ptr[i];
 		if (!peer)
 			continue;
 
@@ -556,7 +557,7 @@ PeerData* server_find_peer(Server* server, uint16_t id)
 {
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
 
@@ -571,7 +572,7 @@ bool server_broadcast(Server* server, Packet* packet, bool reliable)
 {
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
 
@@ -586,7 +587,7 @@ bool server_broadcast_ex(Server* server, Packet* packet, bool reliable, uint16_t
 {
 	for (size_t i = 0; i < server->peers.capacity; i++)
 	{
-		PeerData* v = (PeerData*)server->peers.ptr[i];
+		PeerData* v = (PeerData*) server->peers.ptr[i];
 		if (!v)
 			continue;
 
@@ -620,16 +621,16 @@ bool server_state_joined(PeerData* v)
 
 	switch (v->server->state)
 	{
-	case ST_LOBBY:
-	case ST_CHARSELECT:
-	case ST_MAPVOTE:
-		return lobby_state_join(v);
+		case ST_LOBBY:
+		case ST_CHARSELECT:
+		case ST_MAPVOTE:
+			return lobby_state_join(v);
 
-	case ST_GAME:
-		return game_state_join(v);
+		case ST_GAME:
+			return game_state_join(v);
 
-	case ST_RESULTS:
-		break;
+		case ST_RESULTS:
+			break;
 	}
 
 	return true;
@@ -639,16 +640,16 @@ bool server_state_handle(PeerData* v, Packet* packet)
 {
 	switch (v->server->state)
 	{
-	case ST_LOBBY:
-	case ST_CHARSELECT:
-	case ST_MAPVOTE:
-		return lobby_state_handle(v, packet);
+		case ST_LOBBY:
+		case ST_CHARSELECT:
+		case ST_MAPVOTE:
+			return lobby_state_handle(v, packet);
 
-	case ST_GAME:
-		return game_state_handletcp(v, packet);
+		case ST_GAME:
+			return game_state_handletcp(v, packet);
 
-	case ST_RESULTS:
-		return results_state_handle(v, packet);
+		case ST_RESULTS:
+			return results_state_handle(v, packet);
 	}
 
 	return true;
@@ -667,16 +668,16 @@ bool server_state_left(PeerData* v)
 
 	switch (v->server->state)
 	{
-	case ST_LOBBY:
-	case ST_CHARSELECT:
-	case ST_MAPVOTE:
-		return lobby_state_left(v);
+		case ST_LOBBY:
+		case ST_CHARSELECT:
+		case ST_MAPVOTE:
+			return lobby_state_left(v);
 
-	case ST_GAME:
-		return game_state_left(v);
+		case ST_GAME:
+			return game_state_left(v);
 
-	case ST_RESULTS:
-		break;
+		case ST_RESULTS:
+			break;
 	}
 
 	return true;
@@ -687,7 +688,7 @@ unsigned long server_cmd_parse(String* string)
 	static const char* clr_list[] = CLRLIST;
 
 	String current = { .len = 0 };
-	bool found_digit = false;
+	bool   found_digit = false;
 
 	for (int i = 0; i < string->len; i++)
 	{
@@ -723,11 +724,10 @@ unsigned long server_cmd_parse(String* string)
 	return hash;
 }
 
-
 bool server_cmd_handle(Server* server, unsigned long hash, PeerData* v, String* msg)
 {
 	Packet pack;
-	switch(hash)
+	switch (hash)
 	{
 		default:
 			return false;
@@ -799,7 +799,7 @@ bool server_cmd_handle(Server* server, unsigned long hash, PeerData* v, String* 
 				break;
 			}
 
-			if(ind < 1 || ind > disaster_count())
+			if (ind < 1 || ind > disaster_count())
 			{
 				char msg[128];
 				snprintf(msg, 128, CLRCODE_RED "lobby should be between 1 and %d", disaster_count());
@@ -845,7 +845,7 @@ bool server_cmd_handle(Server* server, unsigned long hash, PeerData* v, String* 
 
 			server_send_msg(v->server, v->peer, "-----------------------");
 			server_send_msg(v->server, v->peer, CLRCODE_RED "better" CLRCODE_BLU "server" CLRCODE_RST " v" STRINGIFY(BUILD_VERSION));
-			server_send_msg(v->server, v->peer, "build from " CLRCODE_PUR  __DATE__ " " CLRCODE_GRN  __TIME__ CLRCODE_RST);
+			server_send_msg(v->server, v->peer, "build from " CLRCODE_PUR __DATE__ " " CLRCODE_GRN __TIME__ CLRCODE_RST);
 			server_send_msg(v->server, v->peer, msg);
 			server_send_msg(v->server, v->peer, "-----------------------");
 			server_send_msg(v->server, v->peer, CLRCODE_GRA "type .help for command list" CLRCODE_RST);
@@ -869,89 +869,88 @@ bool server_cmd_handle(Server* server, unsigned long hash, PeerData* v, String* 
 			RAssert(server_broadcast_msg(v->server, format));
 			break;
 		}
-
 	}
 
 	return true;
 }
 
-bool server_msg_handle(Server *server, PacketType type, PeerData *v, Packet *packet)
+bool server_msg_handle(Server* server, PacketType type, PeerData* v, Packet* packet)
 {
- 	switch(type)
- 	{
-			default:
+	switch (type)
+	{
+		default:
+			break;
+
+		case CLIENT_LOBBY_CHOOSEBAN:
+		{
+			if (!v->op)
 				break;
 
-			case CLIENT_LOBBY_CHOOSEBAN:
+			PacketRead(pid, packet, packet_read16, uint16_t);
+
+			for (size_t i = 0; i < v->server->peers.capacity; i++)
 			{
-				if (!v->op)
-					break;
+				PeerData* peer = (PeerData*) v->server->peers.ptr[i];
+				if (!peer)
+					continue;
 
-				PacketRead(pid, packet, packet_read16, uint16_t);
-
-				for (size_t i = 0; i < v->server->peers.capacity; i++)
+				if (peer->id == pid)
 				{
-					PeerData* peer = (PeerData*)v->server->peers.ptr[i];
-					if (!peer)
-						continue;
-
-					if (peer->id == pid)
-					{
-						RAssert(ban_add(peer->nickname.value, peer->udid.value, peer->ip.value));
-						server_disconnect(v->server, peer->peer, DR_BANNEDBYHOST, NULL);
-						break;
-					}
+					RAssert(ban_add(peer->nickname.value, peer->udid.value, peer->ip.value));
+					server_disconnect(v->server, peer->peer, DR_BANNEDBYHOST, NULL);
+					break;
 				}
-				break;
 			}
+			break;
+		}
 
-			case CLIENT_LOBBY_CHOOSEKICK:
+		case CLIENT_LOBBY_CHOOSEKICK:
+		{
+			if (!v->op)
+				break;
+
+			PacketRead(pid, packet, packet_read16, uint16_t);
+
+			for (size_t i = 0; i < v->server->peers.capacity; i++)
 			{
-				if (!v->op)
-					break;
+				PeerData* peer = (PeerData*) v->server->peers.ptr[i];
+				if (!peer)
+					continue;
 
-				PacketRead(pid, packet, packet_read16, uint16_t);
-
-				for (size_t i = 0; i < v->server->peers.capacity; i++)
+				if (peer->id == pid)
 				{
-					PeerData* peer = (PeerData*)v->server->peers.ptr[i];
-					if (!peer)
-						continue;
-
-					if (peer->id == pid)
-					{
-						RAssert(timeout_set(peer->nickname.value, peer->udid.value, peer->ip.value, time(NULL) + 60));
-						server_disconnect(v->server, peer->peer, DR_KICKEDBYHOST, NULL);
-						break;
-					}
+					RAssert(timeout_set(peer->nickname.value, peer->udid.value, peer->ip.value, time(NULL) + 60));
+					server_disconnect(v->server, peer->peer, DR_KICKEDBYHOST, NULL);
+					break;
 				}
-				break;
 			}
+			break;
+		}
 
-			case CLIENT_LOBBY_CHOOSEOP:
+		case CLIENT_LOBBY_CHOOSEOP:
+		{
+			if (!v->op)
+				break;
+
+			PacketRead(pid, packet, packet_read16, uint16_t);
+
+			for (size_t i = 0; i < v->server->peers.capacity; i++)
 			{
-				if (!v->op)
-					break;
+				PeerData* peer = (PeerData*) v->server->peers.ptr[i];
+				if (!peer)
+					continue;
 
-				PacketRead(pid, packet, packet_read16, uint16_t);
-
-				for (size_t i = 0; i < v->server->peers.capacity; i++)
+				if (peer->id == pid)
 				{
-					PeerData* peer = (PeerData*)v->server->peers.ptr[i];
-					if (!peer)
-						continue;
+					peer->op = true;
 
-					if (peer->id == pid)
-					{
-						peer->op = true;
-
-						RAssert(op_add(peer->nickname.value, peer->ip.value));
-						server_send_msg(v->server, peer->peer, CLRCODE_GRN "you're an operator now");
-						break;
-					}
+					RAssert(op_add(peer->nickname.value, peer->ip.value));
+					server_send_msg(v->server, peer->peer, CLRCODE_GRN "you're an operator now");
+					break;
 				}
-				break;
 			}
+			break;
+		}
 	}
 
 	return true;
@@ -979,7 +978,7 @@ bool server_broadcast_msg(Server* server, const char* message)
 	return true;
 }
 
-bool server_broadcast_msg_ex(Server *server, String *message, uint16_t sender)
+bool server_broadcast_msg_ex(Server* server, String* message, uint16_t sender)
 {
 	// For some unknown reason we can't reuse the incoming message packet
 	// FIXME: Investigate where tf source packet goes missing

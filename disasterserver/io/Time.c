@@ -1,10 +1,10 @@
+#include <CMath.h>
 #include <Log.h>
+#include <float.h>
 #include <io/Time.h>
 #include <time.h>
-#include <CMath.h>
-#include <float.h>
 
-bool init = false;
+bool   init = false;
 double freq = 0;
 
 void time_start(TimeStamp* timer)
@@ -20,7 +20,7 @@ void time_start(TimeStamp* timer)
 			return;
 		}
 
-		freq = (double)(li.QuadPart) / 1000.0;
+		freq = (double) (li.QuadPart) / 1000.0;
 		init = true;
 	}
 
@@ -38,12 +38,12 @@ double time_end(TimeStamp* timer)
 #ifdef _WIN32
 	LARGE_INTEGER li;
 	QueryPerformanceCounter(&li);
-	return (double)((li.QuadPart) / freq) - (*timer);
+	return (double) ((li.QuadPart) / freq) - (*timer);
 #else
 	struct timespec _t;
 	clock_gettime(CLOCK_MONOTONIC, &_t);
 
 	double current = _t.tv_sec * 1000 + _t.tv_nsec / 1e6;
-	return current - (*timer); 
+	return current - (*timer);
 #endif
 }
