@@ -976,3 +976,16 @@ bool server_broadcast_msg(Server* server, const char* message)
 	server_broadcast(server, &pack, true);
 	return true;
 }
+
+bool server_broadcast_msg_ex(Server *server, String *message, uint16_t sender)
+{
+	// For some unknown reason we can't reuse the incoming message packet
+	// FIXME: Investigate where tf source packet goes missing
+	Packet pack;
+	PacketCreate(&pack, CLIENT_CHAT_MESSAGE);
+	PacketWrite(&pack, packet_write16, sender);
+	PacketWrite(&pack, packet_writestr, string_lower(*message));
+
+	server_broadcast_ex(server, &pack, true, sender);
+	return true;
+}

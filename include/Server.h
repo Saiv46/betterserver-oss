@@ -204,6 +204,7 @@ bool				server_broadcast 	(Server* server, Packet* packet, bool reliable);
 bool				server_broadcast_ex (Server* server, Packet* packet, bool reliable, uint16_t ignore);
 bool 				server_send_msg		(Server* server, ENetPeer* peer, const char* message);
 bool 				server_broadcast_msg(Server* server, const char* message);
+bool server_broadcast_msg_ex(Server *server, String *msg, uint16_t sender);
 
 int					server_total 		(Server* server);
 int					server_ingame 		(Server* server);
