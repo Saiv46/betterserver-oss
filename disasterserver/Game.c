@@ -1336,6 +1336,8 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 					{
 						if (dist > 700)
 						{
+							// Debug("Player teleported from (%f,%f) to (%f,%f)", v->plr.pos.x, v->plr.pos.y, new_pos.x, new_pos.y);
+							// Debug("%s teleported %f pixels apart", v->nickname, dist);
 							switch (v->server->game.map)
 							{
 								case 15:
@@ -1352,6 +1354,11 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 
 						if (dist > 60)
 						{
+							// if (dist < 700)
+							// {
+							//	Debug("Player lagged from (%f,%f) to (%f,%f)", v->plr.pos.x, v->plr.pos.y, new_pos.x, new_pos.y);
+							//	Debug("%s lagged %f pixels apart", v->nickname, dist);
+							// }
 							if (!player_add_error(v->server, v, 500))
 								return true;
 						}
