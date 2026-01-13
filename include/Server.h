@@ -46,6 +46,7 @@ typedef struct PeerData
 	bool				op;
 	bool				ready;
 	bool				mod_tool;
+	bool is_mobile;
 	bool				can_vote;
 	bool				voted;
 	bool 				disconnecting;
@@ -124,14 +125,14 @@ typedef struct
 	int8_t			map;
 	bool			started;
 	bool			sudden_death;
-	
+
 	double			start_timeout;
 	double			time;
 	double			elapsed;
 	uint16_t		time_sec;
 	double			end;
 	Ending			ending;
-	
+
 	BigRingState	bring_state;
 	uint8_t			bring_loc;
 
