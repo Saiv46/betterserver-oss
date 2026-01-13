@@ -167,8 +167,6 @@ bool peer_identity(PeerData* v, Packet* packet)
 	PacketRead(udid, packet, packet_readstr, String);
 	PacketRead(lobby_icon, packet, packet_read8, uint8_t);
 	PacketRead(pet, packet, packet_read8, int8_t);
-	PacketRead(checkcum, packet, packet_read64, uint64_t);
-	PacketRead(checkcum2, packet, packet_read64, uint64_t);
 
 	RAssert(ban_check(udid.value, v->ip.value, &is_banned));
 	RAssert(timeout_check(udid.value, v->ip.value, &timeout));
@@ -185,7 +183,7 @@ bool peer_identity(PeerData* v, Packet* packet)
 
 	if (g_config.anticheat)
 	{
-		v->mod_tool = checkcum == 0 || checkcum2 == 0;
+		AssertOrDisconnect(v->server, auth_verify_ticket(v, packet));
 	}
 
 	bool res = true;
@@ -336,21 +334,7 @@ bool server_worker(Server* server)
 
 					Packet packet;
 					PacketCreate(&packet, SERVER_PREIDENTITY);
-
-					// Red herrings? Nah, we have Red Rope(TM)
-					// All values here are complete bogus btw
-					PacketWrite(&packet, packet_write16, 0);
-					PacketWrite(&packet, packet_write16, 1);
-					PacketWrite(&packet, packet_write8, v->auth.one = (uint8_t) rand());
-					PacketWrite(&packet, packet_write8, (uint8_t) rand() % 2);
-					PacketWrite(&packet, packet_write8, v->auth.two = (uint8_t) rand() % 31);
-					const char balls[] = { 0xff, 0x1c, 0x22, 0x00, 0x14, 0x80 };
-					for (int i = 0; i < 3; i++)
-					{
-						PacketWrite(&packet, packet_write8, balls[rand() % sizeof(balls)]);
-					}
-					PacketWrite(&packet, packet_write32, v->auth.type = rand() & ~((1 << 9) | (1 << 31) | (1 << 26)));
-
+					RAssert(auth_create_ticket(v, &packet));
 					RAssert(packet_send(ev.peer, &packet, true));
 					break;
 				}

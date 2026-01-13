@@ -1,6 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include <Auth.h>
 #include <DyList.h>
 #include <Lib.h>
 #include <Log.h>
@@ -19,15 +20,8 @@
 #define STR_HELPER(x) #x
 #define STRINGIFY(x) STR_HELPER(x)
 
-// Used by official servers as anti-tamper measure
-typedef struct
-{
-	uint32_t type;
-	uint8_t	 one;
-	uint8_t	 two;
-} PeerAuth;
-
 struct Server;
+struct auth_peer_data;
 typedef struct PeerData
 {
 	uint16_t  id;
@@ -51,7 +45,7 @@ typedef struct PeerData
 	bool voted;
 	bool disconnecting;
 
-	PeerAuth auth;
+	auth_peer_data auth;
 
 	/* Character */
 	enum
