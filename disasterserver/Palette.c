@@ -107,6 +107,18 @@ bool palette_player_validate(PeerData* v, Packet* packet)
 	PacketRead(name, packet, packet_readstr, String);
 	PacketRead(size, packet, packet_read8, uint8_t);
 
+	// debounce
+	if (from)
+	{
+		RAssert(!v->sent_palette_from);
+		v->sent_palette_from = true;
+	}
+	else
+	{
+		RAssert(!v->sent_palette_to);
+		v->sent_palette_to = true;
+	}
+
 	// default
 	if (size <= 0)
 		return false;

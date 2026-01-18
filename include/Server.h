@@ -44,6 +44,8 @@ typedef struct PeerData
 	bool can_vote;
 	bool voted;
 	bool disconnecting;
+	bool sent_palette_from;
+	bool sent_palette_to;
 
 	auth_peer_data auth;
 

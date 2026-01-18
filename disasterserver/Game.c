@@ -153,6 +153,8 @@ bool game_init(int exe, int8_t map, Server* server)
 
 		v->plr.ready = false;
 		v->plr.mod_tool = v->mod_tool;
+		v->sent_palette_from = false;
+		v->sent_palette_to = false;
 
 		for (int i = 0; i < 5; i++)
 			v->plr.revival_init[i] = -1;
