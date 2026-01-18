@@ -519,6 +519,12 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			break;
 
 		case CLIENT_PLAYER_POTATER:
+		{
+			AssertOrDisconnect(v->server, v->in_game);
+			AssertOrDisconnect(v->server, v->server->game.map == 20);
+			server_broadcast_ex(v->server, packet, true, v->id);
+			break;
+		}
 		case CLIENT_SOUND_EMIT:
 		case CLIENT_SPAWN_EFFECT:
 		case CLIENT_PET_PALETTE:
@@ -693,6 +699,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			PacketRead(exe, packet, packet_read8, uint8_t);
 			PacketRead(chg, packet, packet_read8, uint8_t);
 			AssertOrDisconnect(v->server, dir >= -1 && dir <= 1);
+			AssertOrDisconnect(v->server, ((v->plr.flags & PLAYER_DEMONIZED) > 0) == (bool) exe);
 
 			if (v->mod_tool)
 			{
@@ -800,13 +807,10 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			PacketRead(x, packet, packet_read16, uint16_t);
 			PacketRead(y, packet, packet_read16, uint16_t);
 			PacketRead(red_ring, packet, packet_read8, uint8_t);
+			AssertOrDisconnect(v->server, ((v->plr.flags & PLAYER_DEMONIZED) > 0) == (bool) red_ring);
 
 			Vector2 pos = { (float) x, (float) y };
 			AssertOrDisconnect(v->server, vector2_dist(&pos, &v->plr.pos) <= 40);
-
-			static double PI = 0.0;
-			if (PI == 0.0)
-				PI = acos(-1);
 
 			if (red_ring)
 			{
@@ -1336,7 +1340,9 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 				{
 					if (v->plr.ex_teleport == 0)
 					{
-						if (dist > 700)
+						// Under normal circumstances, players CANNOT move faster than 200 pixels per frame
+						// FIXME: Add acceleration check
+						if (dist > 200)
 						{
 							// Debug("Player teleported from (%f,%f) to (%f,%f)", v->plr.pos.x, v->plr.pos.y, new_pos.x, new_pos.y);
 							// Debug("%s teleported %f pixels apart", v->nickname, dist);
