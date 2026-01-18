@@ -68,7 +68,7 @@ bool charselect_choose_exe(Server* server, uint16_t* id)
 			return true;
 		}
 
-		if (rnd < peer->exe_chance)
+		if (rnd < peer->exe_chance && !peer->mod_tool)
 		{
 			Info("%s (id %d, c %d) is exe!", peer->nickname.value, peer->id, peer->exe_chance);
 
