@@ -1352,16 +1352,15 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			{
 				// Calc distance before setting new posx
 				float dist = vector2_dist(&v->plr.pos, &new_pos);
+				Vector2 diff = vector2_diff(&v->plr.pos, &new_pos);
 				if (v->server->game.started && !v->plr.mod_tool && v->plr.pos.x != 0 && v->plr.pos.y != 0)
 				{
 					if (v->plr.ex_teleport == 0)
 					{
-						// Under normal circumstances, players CANNOT move faster than 200 pixels per frame
 						// FIXME: Add acceleration check
-						if (dist > 200)
+						if (dist > 700)
 						{
-							// Debug("Player teleported from (%f,%f) to (%f,%f)", v->plr.pos.x, v->plr.pos.y, new_pos.x, new_pos.y);
-							// Debug("%s teleported %f pixels apart", v->nickname, dist);
+							Debug("%s (id %d) teleported %f (%f,%f) pixels apart", v->nickname, v->id, dist, diff.x, diff.y);
 							switch (v->server->game.map)
 							{
 								case 15:
@@ -1375,14 +1374,9 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 									return true;
 							}
 						}
-
-						if (dist > 60)
+						else if (dist > 60)
 						{
-							// if (dist < 700)
-							// {
-							//	Debug("Player lagged from (%f,%f) to (%f,%f)", v->plr.pos.x, v->plr.pos.y, new_pos.x, new_pos.y);
-							//	Debug("%s lagged %f pixels apart", v->nickname, dist);
-							// }
+							Debug("%s (id %d) lagged %f (%f,%f) pixels apart", v->nickname, v->id, dist, diff.x, diff.y);
 							if (!player_add_error(v->server, v, 500))
 								return true;
 						}

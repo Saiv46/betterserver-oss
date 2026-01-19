@@ -15,6 +15,11 @@ float vector2_dist(Vector2* a, Vector2* b)
 	return sqrtf(powf(b->x - a->x, 2) + powf(b->y - a->y, 2));
 }
 
+Vector2 vector2_diff(Vector2* a, Vector2* b)
+{
+	return (Vector2) { fabsf(b->x - a->x), fabsf(b->y - a->y) };
+}
+
 Vector2 vector2_dir(Vector2* a, Vector2* b)
 {
 	return (Vector2) { sign(a->x - b->x), sign(a->y - b->y) };
