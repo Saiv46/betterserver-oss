@@ -1,0 +1,12 @@
+name: betterserver
+services:
+  gameserver:
+    build: https://github.com/saiv46/betterserver.git#fork:contrib
+    container_name: disaster2d-server
+    init: false
+    restart: unless-stopped
+    mem_limit: 300M
+    volumes:
+      - ./data:/data
+    ports:
+      - 8606-8606:8606-8606/udp

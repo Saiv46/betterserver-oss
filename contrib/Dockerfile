@@ -3,7 +3,7 @@ FROM alpine:latest AS builder
 RUN apk update && apk --no-cache add git clang cmake make pkgconfig
 
 ARG branch=fork
-ADD https://github.com/Saiv46/betterserver-oss.git#$branch /source
+ADD ../ /source
 WORKDIR /build
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_EXE_LINKER_FLAGS=-static /source
 RUN make
