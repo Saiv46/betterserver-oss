@@ -1,11 +1,13 @@
 name: betterserver
 services:
   gameserver:
-    build: https://github.com/saiv46/betterserver.git#fork:contrib
+    build:
+      context: https://github.com/saiv46/betterserver-oss.git#fork
+      dockerfile: ./contrib/Dockerfile
     container_name: disaster2d-server
     init: false
     restart: unless-stopped
-    mem_limit: 300M
+    mem_limit: 100M
     volumes:
       - ./data:/data
     ports:
