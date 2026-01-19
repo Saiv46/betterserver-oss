@@ -400,6 +400,12 @@ bool server_worker(Server* server)
 
 					break;
 				}
+
+				case ENET_EVENT_TYPE_NONE:
+				{
+					// Nothing happened lmao
+					break;
+				}
 			}
 		}
 

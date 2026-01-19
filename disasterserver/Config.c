@@ -98,7 +98,13 @@ bool collection_init(cJSON** output, const char* file, const char* default_value
 	}
 
 	fseek(f, 0, SEEK_SET);
-	fread(buffer, 1, len, f);
+	if (fread(buffer, 1, len, f) != len)
+	{
+		Warn("Failed to read a list!");
+		free(buffer);
+		return false;
+	}
+
 	fclose(f);
 
 	*output = cJSON_ParseWithLength(buffer, len);
@@ -106,6 +112,7 @@ bool collection_init(cJSON** output, const char* file, const char* default_value
 	{
 		Err("Failed to parse %s: %s", file, cJSON_GetErrorPtr());
 		*output = cJSON_CreateObject();
+		free(buffer);
 		return false;
 	}
 	else

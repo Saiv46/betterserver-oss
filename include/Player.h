@@ -19,49 +19,23 @@ typedef enum
 
 typedef struct
 {
-	uint8_t	 ready;
-	uint16_t seq;
-	uint16_t errors; /* Used as tracker for errors like lag/etc */
-	uint8_t	 ex_teleport;
-	double	 timeout;
-
-	uint8_t	  mod_tool;
-	uint32_t  mod_tool_timer;
-	uint32_t  chunk;
+	double	  timeout;
 	TimeStamp last_packet;
-
-	/* Attack */
-	bool	  is_attacking;
 	double	  attack_timer;
 	TimeStamp last_attack;
-
-	uint16_t  ping_last;
 	double	  ping_total;
 	double	  ping_timer;
-	uint16_t  rings;
 	TimeStamp last_rings;
-	uint16_t  heal_rings;
-
-	uint8_t		state;
-	PlayerFlags flags;
-	uint8_t		death_timer_sec;
-	double		death_timer;
-	double		revival;
-	int32_t		revival_init[5];
-
+	double	  death_timer;
+	double	  revival;
 	uintptr_t data[4]; /* Can be used as pointer/data field */
-	Vector2	  start_pos;
-	Vector2	  pos;
-
 	struct
 	{
-		double survive_time;
-		double danger_time;
-		double camp_time;
-
-		double braindead_time;
-		bool   brain_damage;
-
+		double	 survive_time;
+		double	 danger_time;
+		double	 camp_time;
+		double	 braindead_time;
+		bool	 brain_damage;
 		uint16_t stun_time;
 		uint16_t stuns;
 		uint16_t hp_restored;
@@ -70,6 +44,22 @@ typedef struct
 		uint16_t damage_taken;
 		uint16_t kills;
 	} stats;
+	uint32_t	chunk;
+	PlayerFlags flags;
+	Vector2		start_pos;
+	Vector2		pos;
+	uint16_t	revival_init[5]; // An array for 5 player IDs
+	uint16_t	errors;			 // Used as tracker for errors like lag/etc
+	uint16_t	ping_last;
+	uint16_t	rings;
+	uint16_t	heal_rings;
+	uint8_t		ex_teleport;
+	uint8_t		mod_tool_timer;
+	uint8_t		state;
+	uint8_t		death_timer_sec;
+	bool		ready;
+	bool		mod_tool;
+	bool		is_attacking;
 } Player;
 
 #define SET_FLAG(x, flag) x |= (flag)

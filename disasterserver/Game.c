@@ -447,6 +447,10 @@ bool game_demonize(Server* server, PeerData* data)
 				server->game.cooldowns[CREAM_RING_SPAWN] = 0;
 				break;
 			}
+			default:
+			{
+				break;
+			}
 		}
 
 		Info("%s " LOG_RST "(id %d)" LOG_RED " was demonized!", data->nickname.value, data->id);
@@ -764,6 +768,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			{
 				PeerData* data = server_find_peer(v->server, v->id);
 				RAssert(data);
+				RAssert(ent);
 
 				if (!ent->red)
 				{
@@ -989,6 +994,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 			ExellerClone* clone;
 			if (game_despawn(v->server, (Entity**) &clone, eid))
 			{
+				RAssert(clone);
 				if (v->mod_tool)
 				{
 					Packet pack;
@@ -1153,7 +1159,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 
 					for (int i = 0; i < 5; i++)
 					{
-						if (to_revive->plr.revival_init[i] == -1)
+						if (to_revive->plr.revival_init[i] == (uint16_t) -1)
 						{
 							ind = i;
 							break;
@@ -1184,7 +1190,7 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 
 				for (int i = 0; i < 5; i++)
 				{
-					if (to_revive->plr.revival_init[i] == -1)
+					if (to_revive->plr.revival_init[i] == (uint16_t) -1)
 						break;
 
 					PeerData* data = server_find_peer(v->server, to_revive->plr.revival_init[i]);
@@ -1294,11 +1300,21 @@ bool game_state_handletcp(PeerData* v, Packet* packet)
 				}
 
 				v->plr.is_attacking = flags & PLAYER_ATTACKING;
+				if ((v->plr.flags & PLAYER_DEMONIZED) && (flags & PLAYER_DEMONIZED) == 0)
+				{
+					server_disconnect(v->server, v->peer, DR_OTHER, "holy water won't work here");
+					return true;
+				}
 				switch (v->surv_char)
 				{
 					case CH_EGGMAN:
 					{
 						duration = 3000;
+						break;
+					}
+					default:
+					{
+						// FIXME: wtf is duration variable
 						break;
 					}
 				}
@@ -1561,7 +1577,7 @@ bool game_player_tick(Server* server)
 
 				if (server->game.map != 8 && server->game.map != 6)
 				{
-					// calc balls
+					// check if player is sitting in a single 480x270 region
 					uint32_t chunk = ((uint32_t) data->plr.pos.x / 480) + ((uint32_t) data->plr.pos.y / 270);
 					if (data->plr.chunk != chunk)
 					{

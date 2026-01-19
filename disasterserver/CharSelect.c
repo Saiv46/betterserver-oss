@@ -81,7 +81,7 @@ bool charselect_choose_exe(Server* server, uint16_t* id)
 		rnd -= peer->exe_chance;
 	}
 
-	*id = -1;
+	*id = (uint16_t) -1;
 	return false;
 }
 
@@ -239,7 +239,7 @@ bool charselect_init(int8_t map, Server* server)
 	RAssert(server);
 	RAssert(charselect_choose_exe(server, &server->lobby.exe));
 
-	if (server->lobby.exe == -1)
+	if (server->lobby.exe == (uint16_t) -1)
 	{
 		Err("Failed to pick exe for some reason!");
 		return lobby_init(server);
